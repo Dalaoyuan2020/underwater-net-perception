@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>网的朝向 · 一张图</title>
+<style>
+:root{--bg:#08131c;--pn:#12293a;--ln:#2a4d66;--tx:#e6f1f7;--dim:#93b3c6;--d2:#6d90a5;--cy:#4fd0e0;--yl:#ffcf4d;--or:#ff924d;--rd:#ff5d5d;--gr:#5fd68a}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--tx);font-family:"PingFang SC","Microsoft YaHei",system-ui,sans-serif;line-height:1.75}
+.wrap{max-width:1060px;margin:0 auto;padding:36px 20px 70px}
+h1{font-size:26px;line-height:1.4;margin:8px 0 10px}
+h1 em{color:var(--yl);font-style:normal}
+.kick{color:var(--cy);font-size:12px;letter-spacing:.2em;font-weight:700}
+.sub{color:var(--dim);font-size:14.5px;margin-bottom:8px}
+.box{background:var(--pn);border:1px solid var(--ln);border-radius:13px;padding:20px;margin:18px 0}
+.box h3{color:var(--cy);font-size:15px;margin-bottom:6px}
+.box .n{color:var(--d2);font-size:13px;margin-bottom:14px}
+svg{display:block;width:100%;height:auto}
+.t{font-size:12.5px;fill:var(--dim);font-weight:500}
+.note{color:var(--d2);font-size:13px;margin-top:12px;line-height:1.7}
+.note b{color:var(--tx)}
+.bad{background:rgba(255,93,93,.09);border:1px solid rgba(255,93,93,.4);border-radius:12px;padding:15px 17px;font-size:13.5px;line-height:1.75;margin:16px 0}
+.bad b{color:var(--rd)}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<div class="kick">核电冷源取水拦污网 · 朝向</div>
+<h1>网是<em>一道垂直帘幕，把水流截住</em>；网兜在网的<em>下游</em></h1>
+<div class="sub">纯 2D，两个视角：先看平面定方向，再看迎水面定检查项。没有 3D、没有交互，只有一种画法。</div>
+
+<!-- ═══════════ 视角一：平面（定方向） ═══════════ -->
+<div class="box">
+  <h3>视角一 · 平面（从上往下看）</h3>
+  <div class="n">这一张只说明一件事：网是竖着的一道线，垂直撞上横向的水流。</div>
+  <svg viewBox="0 0 1000 340">
+    <defs>
+      <marker id="a1" markerWidth="11" markerHeight="11" refX="8" refY="3.5" orient="auto">
+        <path d="M0,0 L9,3.5 L0,7 z" fill="#ffcf4d"/></marker>
+      <marker id="a2" markerWidth="11" markerHeight="11" refX="8" refY="3.5" orient="auto">
+        <path d="M0,0 L9,3.5 L0,7 z" fill="#4fd0e0"/></marker>
+    </defs>
+    <rect width="1000" height="340" fill="#0c1e2b"/>
+
+    <!-- 水流：全部水平向右 -->
+    <g stroke="#ffcf4d" stroke-width="4" fill="none" opacity=".9" marker-end="url(#a1)">
+      <path d="M30 66  h200"/><path d="M30 126 h200"/><path d="M30 186 h200"/>
+      <path d="M30 246 h200"/><path d="M30 302 h200"/>
+    </g>
+    <text x="34" y="50" class="t" fill="#ffcf4d" font-size="14" font-weight="700">水 流 方 向 →（五股平行，朝右）</text>
+
+    <!-- ① 第一道拦截网：往前（上游）拉开 -->
+    <g id="pl"></g>
+    <line x1="286" y1="60" x2="286" y2="316" stroke="#ff924d" stroke-width="9" stroke-linecap="round"/>
+    <text x="300" y="78" class="t" fill="#ffb98f" font-size="14" font-weight="700">第一道拦截网 · 平网</text>
+    <text x="300" y="98" class="t" fill="#ffb98f" font-size="12.5">垂直水流 · 把水截住 · 往上游拉开</text>
+
+    <!-- ② 机器人行走区域：网与网兜之间，尽量拉开 -->
+    <rect x="300" y="60" width="356" height="256" fill="rgba(79,208,224,.09)" stroke="#4fd0e0" stroke-width="1.6" stroke-dasharray="7 5"/>
+    <text x="478" y="90" class="t" fill="#8fe8f5" font-size="13.5" font-weight="700" text-anchor="middle">机器人行走区域</text>
+    <text x="478" y="108" class="t" fill="#6fb8c8" font-size="11.5" text-anchor="middle">网 ←——— 这段距离就是机器人的走行距离 ———→ 网兜</text>
+
+    <!-- 机器人在中间沿网方向（竖直）走 -->
+    <g id="bot"></g>
+
+    <!-- ③ 网兜：在下游，与网分开 -->
+    <g id="bg"></g>
+    <text x="660" y="296" class="t" fill="#9fc78f" font-size="13.5" font-weight="700">网兜（横在下游）</text>
+    <text x="660" y="314" class="t" fill="#9fc78f" font-size="12">与网分开 · 不在检查范围</text>
+
+    <!-- 距离标注 -->
+    <g>
+      <path d="M286 332 V336" stroke="#3d6d8c" stroke-width="1"/>
+      <path d="M286 324 H656 M656 324 V336" stroke="#4fd0e0" stroke-width="1.4" stroke-dasharray="4 3"/>
+      <path d="M286 318 v12 M656 318 v12" stroke="#4fd0e0" stroke-width="1.4"/>
+      <text x="471" y="342" class="t" fill="#8fe8f5" font-size="11.5" text-anchor="middle" font-weight="700">网 ↔ 网兜 间距 = 机器人走行走廊</text>
+    </g>
+
+    <!-- 下游 -->
+    <path d="M812 268 h150" stroke="#4fd0e0" stroke-width="2.5" fill="none" opacity=".55" marker-end="url(#a2)"/>
+    <text x="962" y="258" class="t" fill="#8fd8e8" font-size="13" text-anchor="end" font-weight="700">下游 → 泵房前池</text>
+
+    <!-- 侧隙 -->
+    <path d="M286 172 h18 M286 164 v16 M304 164 v16" stroke="#ff5d5d" stroke-width="2.6"/>
+    <text x="276" y="178" class="t" fill="#ff8f8f" font-size="12.5" text-anchor="end" font-weight="700">侧隙（网 ↔ 桩）</text>
+  </svg>
+  <div class="note">
+    <b>怎么一眼判断对错：</b>黄色水流是一组<b>横向平行箭头</b>，橙色的网是一根<b>竖线</b>，两者<b>正交</b>。<br>
+    如果网也画成横线、和水流平行 —— 那就是我上一版的错，网顺着水，什么都拦不住。<br>
+    <b>网与网兜之间特意拉开一段</b>，中间青色带就是<b>机器人的行走区域</b>：机器人沿网的方向（画面上竖直）来回走，靠近网面去量侧隙/底缝/破损，<b>不进网兜</b>。
+  </div>
+</div>
+
+<!-- ═══════════ 视角二：迎水面（定检查项） ═══════════ -->
+<div class="box">
+  <h3>视角二 · 正对迎水面看</h3>
+  <div class="n">顺着水流往上游看：桩是圆的，网是挂在两根桩之间的一块竖面。四项检查全在这块竖面上。</div>
+  <svg viewBox="0 0 1000 380">
+    <rect width="1000" height="380" fill="#0c1e2b"/>
+    <!-- 水从纸面外流向纸面内 -->
+    <g stroke="#ffcf4d" stroke-width="3.4" fill="none" opacity=".85" marker-end="url(#a1)">
+      <path d="M120 70  V300 M180 70 V300 M240 70 V300"/>
+    </g>
+    <text x="150" y="46" class="t" fill="#ffcf4d" font-size="13.5" font-weight="700">水从纸面外朝纸面内流 ↓</text>
+
+    <!-- 网面（竖着的面，透视成梯形） -->
+    <path d="M330 60 L690 60 L760 320 L260 320 Z" fill="rgba(255,146,77,.15)" stroke="#ff924d" stroke-width="2.4"/>
+    <!-- 网纹 -->
+    <g stroke="#d08a52" stroke-width=".7" opacity=".45">
+      <path d="M370 62 L316 320 M420 62 L392 320 M470 62 L470 320 M520 62 L548 320 M570 62 L624 320 M620 62 L700 320"/>
+      <path d="M310 116 H706 M300 172 H716 M292 228 H724 M286 282 H730"/>
+    </g>
+    <!-- 鼓包：网被推向纸面内（下游） -->
+    <path d="M470 172 Q 520 190 570 172" stroke="#ffcf4d" stroke-width="1.8" fill="none" stroke-dasharray="6 4"/>
+    <text x="520" y="212" class="t" fill="#ffe9a8" font-size="12" text-anchor="middle" font-weight="700">被流推得向下游鼓</text>
+
+    <!-- ① 侧隙 -->
+    <path d="M330 62 h18 M330 54 v16 M348 54 v16" stroke="#ff5d5d" stroke-width="2.6"/>
+    <circle cx="296" cy="62" r="12" fill="#12293a" stroke="#ff5d5d" stroke-width="1.8"/>
+    <text x="296" y="66" class="t" fill="#ff5d5d" font-weight="700" text-anchor="middle">1</text>
+    <text x="278" y="42" class="t" fill="#ff8f8f" font-size="13" text-anchor="end" font-weight="700">侧向间隙</text>
+    <text x="278" y="60" class="t" fill="#ff8f8f" font-size="11.5" text-anchor="end">网边缘 ↔ 桩</text>
+
+    <!-- ② 底缝 -->
+    <path d="M420 320 V352 M410 320 h20 M410 352 h20" stroke="#ff5d5d" stroke-width="2.6"/>
+    <circle cx="420" cy="284" r="12" fill="#12293a" stroke="#ff5d5d" stroke-width="1.8"/>
+    <text x="420" y="288" class="t" fill="#ff5d5d" font-weight="700" text-anchor="middle">2</text>
+    <text x="442" y="280" class="t" fill="#ff8f8f" font-size="13" font-weight="700">底部间隙</text>
+    <text x="442" y="298" class="t" fill="#ff8f8f" font-size="11.5">底纲 ↔ 渠底 / 底板</text>
+
+    <!-- ③ 缺块 + 破洞 -->
+    <path d="M560 96 q 14 -16 28 0 q 14 16 28 0" stroke="#ff5d5d" stroke-width="2.6" fill="none"/>
+    <path d="M600 196 l 18 -15 l 15 17 l -18 15 z" stroke="#ff5d5d" stroke-width="2.6" fill="rgba(255,93,93,.22)"/>
+    <circle cx="540" cy="96" r="12" fill="#12293a" stroke="#ff5d5d" stroke-width="1.8"/>
+    <text x="540" y="100" class="t" fill="#ff5d5d" font-weight="700" text-anchor="middle">3</text>
+    <text x="558" y="92" class="t" fill="#ff8f8f" font-size="13" font-weight="700">缺块 / 破洞</text>
+    <text x="646" y="220" class="t" fill="#ff8f8f" font-size="11.5">洞</text>
+
+    <!-- ④ 网绳变形 -->
+    <path d="M330 320 L 520 236" stroke="#ffcf4d" stroke-width="1.5" stroke-dasharray="5 4"/>
+    <circle cx="528" cy="252" r="12" fill="#12293a" stroke="#ffcf4d" stroke-width="1.8"/>
+    <text x="528" y="256" class="t" fill="#ffcf4d" font-weight="700" text-anchor="middle">4</text>
+    <text x="552" y="248" class="t" fill="#ffe9a8" font-size="13" font-weight="700">网绳变形</text>
+    <text x="552" y="266" class="t" fill="#ffe9a8" font-size="11.5">鼓包偏斜 · 纲绳离位</text>
+
+    <text x="500" y="368" class="t" text-anchor="middle" fill="#8aa3b0" font-size="12.5">网兜在纸面更深处（下游），机器人不钻进去</text>
+  </svg>
+</div>
+
+<div class="bad">
+  <b>我上一版错在哪（就一句）</b><br>
+  我把网画成了<b>沿水流铺开的一片斜膜</b>，桩排在水的两侧 —— 那是纵向看，等于网顺着水流。正确是：<b>桩排垂直水流成一行，网挂在相邻桩之间形成一道垂直帘幕截流，网兜横在网的下游。</b>
+  课题 PDF 里那张三维示意图（桩 / 平网 / 网兜 / 水流方向）画的就是这个关系。
+</div>
+
+</div>
+
+<script>
+/* 平面图：桩列（竖）+ 网兜（横在下游）+ 机器人行走区域（网与网兜之间） */
+(function(){
+  const NS='http://www.w3.org/2000/svg';
+  const mk=(t,a)=>{const e=document.createElementNS(NS,t);for(const k in a)e.setAttribute(k,a[k]);return e;};
+  const pl=document.getElementById('pl'), bg=document.getElementById('bg'), bot=document.getElementById('bot');
+  const NETX=286, BAGX=656;                                   // 网在上游，网兜在下游，尽量分开
+  const ys=[64,142,204,266,308];                              // 桩沿竖直方向排开（垂直于水流）
+  const pitch=['18 m','16 m','18 m','18 m'];                  // 俯视图尺寸链
+
+  ys.forEach(y=>{
+    pl.appendChild(mk('circle',{cx:NETX,cy:y,r:10,fill:'#b9c3c9',stroke:'#7fe3f0','stroke-width':1.8}));
+    pl.appendChild(mk('circle',{cx:NETX,cy:y,r:3.6,fill:'#08131c'}));
+  });
+  pitch.forEach((p,i)=>{
+    const y0=ys[i],y1=ys[i+1];
+    pl.appendChild(mk('line',{x1:NETX-16,y1:y0,x2:NETX-16,y2:y1,stroke:'#3d6d8c','stroke-width':1.2}));
+    pl.appendChild(mk('line',{x1:NETX-22,y1:y0,x2:NETX-10,y2:y0,stroke:'#3d6d8c','stroke-width':1.2}));
+    pl.appendChild(mk('line',{x1:NETX-22,y1:y1,x2:NETX-10,y2:y1,stroke:'#3d6d8c','stroke-width':1.2}));
+    const t=mk('text',{x:NETX-26,y:(y0+y1)/2+4,'text-anchor':'end',fill:'#a8c8d8','font-size':11.5,'font-weight':700});
+    t.textContent=p; pl.appendChild(t);
+  });
+
+  // 网兜：从 BAGX 往下游横着铺，梯形收口
+  for(let i=0;i<ys.length-1;i++){
+    const y0=ys[i],y1=ys[i+1],L=150,mid=(y0+y1)/2,bk=(y1-y0)*0.30;
+    bg.appendChild(mk('polygon',{points:`${BAGX},${y0} ${BAGX},${y1} ${BAGX+L},${mid+bk/2} ${BAGX+L},${mid-bk/2}`,
+      fill:'rgba(127,160,90,.32)',stroke:'#9fc78f','stroke-width':1.4}));
+    bg.appendChild(mk('line',{x1:BAGX+L,y1:mid-bk/2,x2:BAGX+L,y2:mid+bk/2,stroke:'#9fc78f','stroke-width':3.4}));
+    bg.appendChild(mk('line',{x1:BAGX,y1:mid,x2:BAGX+L,y2:mid,stroke:'#9fc78f','stroke-width':.8,opacity:.45}));
+  }
+
+  // 机器人：在走廊里沿网方向（竖直）往返，靠近网面去测
+  const RX=478;
+  bot.appendChild(mk('rect',{x:RX-16,y:157,width:32,height:24,rx:5,fill:'#2b9fb5',stroke:'#7fe3f0','stroke-width':1.8}));
+  bot.appendChild(mk('circle',{cx:RX,cy:169,r:6.5,fill:'#08131c'}));
+  bot.appendChild(mk('line',{x1:RX,y1:126,x2:RX,y2:157,stroke:'#7fe3f0','stroke-width':1.7}));
+  bot.appendChild(mk('path',{d:`M${RX-6} 133 L${RX} 124 L${RX+6} 133 Z`,fill:'#7fe3f0'}));
+  bot.appendChild(mk('line',{x1:RX,y1:212,x2:RX,y2:181,stroke:'#7fe3f0','stroke-width':1.7}));
+  bot.appendChild(mk('path',{d:`M${RX-6} 205 L${RX} 214 L${RX+6} 205 Z`,fill:'#7fe3f0'}));
+  bot.appendChild(mk('line',{x1:RX-16,y1:169,x2:NETX+18,y2:169,stroke:'#ff8f8f','stroke-width':1.6,'stroke-dasharray':'4 3'}));
+  bot.appendChild(mk('path',{d:`M${NETX+24} 163 L${NETX+16} 169 L${NETX+24} 175 Z`,fill:'#ff8f8f'}));
+  const t=mk('text',{x:RX+8,y:150,fill:'#8fe8f5','font-size':11.5,'font-weight':700});
+  t.textContent='机器人'; bot.appendChild(t);
+})();
+</script>
+</body>
+</html>

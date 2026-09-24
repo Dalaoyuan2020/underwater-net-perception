@@ -1,0 +1,734 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>方向1 结论可视化 · 水下网具状态监测</title>
+<style>
+:root{
+  --bg:#0a1620; --bg2:#0f2030; --panel:#13293a; --panel2:#17364a;
+  --line:#2a4d66; --line2:#3d6d8c;
+  --txt:#e6f1f7; --dim:#93b3c6; --dim2:#6d90a5;
+  --cy:#4fd0e0; --cy2:#2b9fb5;
+  --yl:#ffcf4d; --or:#ff924d; --rd:#ff5d5d; --gr:#5fd68a; --pu:#a68cff;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{
+  background:var(--bg); color:var(--txt);
+  font-family:"PingFang SC","Microsoft YaHei","Hiragino Sans GB",system-ui,sans-serif;
+  line-height:1.7; padding:0 0 80px;
+}
+.wrap{max-width:1180px;margin:0 auto;padding:0 20px}
+
+/* ---------- header ---------- */
+header{
+  padding:52px 0 34px;
+  background:linear-gradient(180deg,#0d2436 0%,var(--bg) 100%);
+  border-bottom:1px solid var(--line);
+  margin-bottom:38px;
+}
+.kicker{color:var(--cy);font-size:13px;letter-spacing:.22em;font-weight:600;margin-bottom:14px}
+h1{font-size:34px;font-weight:700;letter-spacing:-.01em;line-height:1.3}
+h1 small{display:block;font-size:17px;color:var(--dim);font-weight:400;margin-top:10px}
+.hero{
+  margin-top:26px;padding:22px 26px;border-radius:14px;
+  background:linear-gradient(90deg,rgba(79,208,224,.13),rgba(79,208,224,.03));
+  border-left:4px solid var(--cy);
+}
+.hero b{color:var(--cy)}
+.hero .big{font-size:19px;font-weight:600;line-height:1.6}
+
+/* ---------- section ---------- */
+section{margin-bottom:52px}
+h2{
+  font-size:21px;font-weight:650;margin-bottom:6px;
+  display:flex;align-items:center;gap:12px;
+}
+h2 .n{
+  flex:0 0 auto;width:30px;height:30px;border-radius:8px;
+  background:var(--panel2);color:var(--cy);
+  font-size:14px;display:flex;align-items:center;justify-content:center;
+  border:1px solid var(--line2);
+}
+.sub{color:var(--dim2);font-size:14px;margin-bottom:20px;margin-left:42px}
+.card{
+  background:var(--panel);border:1px solid var(--line);
+  border-radius:14px;padding:22px;margin-bottom:16px;
+}
+.card h3{font-size:16px;margin-bottom:12px;color:var(--cy);font-weight:650}
+.card p{color:var(--dim);font-size:14.5px}
+.card p+p{margin-top:10px}
+
+/* ---------- diagram ---------- */
+.diag{
+  background:linear-gradient(180deg,#0b1c28,#0e2536);
+  border:1px solid var(--line);border-radius:14px;
+  padding:8px;margin-bottom:16px;overflow-x:auto;
+}
+svg{display:block;min-width:760px;width:100%;height:auto}
+.t{cursor:pointer;transition:opacity .18s}
+.t:hover{opacity:.82}
+.t.on rect,.t.on path,.t.on circle{stroke:var(--yl)!important;stroke-width:2.5!important}
+.lbl{font-size:12.5px;fill:var(--dim);font-weight:500}
+.num{font-size:12px;font-weight:700;fill:var(--yl)}
+
+/* ---------- marker legend / detail ---------- */
+.row{display:grid;grid-template-columns:repeat(auto-fit,minmax(215px,1fr));gap:12px}
+.pill{
+  background:var(--panel2);border:1px solid var(--line);border-radius:11px;
+  padding:14px 15px;cursor:pointer;transition:.18s;
+}
+.pill:hover{border-color:var(--cy2);transform:translateY(-2px)}
+.pill.on{background:#1c4256;border-color:var(--cy)}
+.pill .k{color:var(--yl);font-size:12px;font-weight:700;letter-spacing:.06em}
+.pill .t2{font-size:15.5px;font-weight:650;margin:5px 0 7px}
+.pill .d{font-size:13px;color:var(--dim2);line-height:1.55}
+
+/* ---------- timeline ---------- */
+.tl{position:relative;padding-left:26px}
+.tl:before{content:"";position:absolute;left:7px;top:6px;bottom:6px;width:2px;background:var(--line)}
+.ev{position:relative;padding:0 0 18px 14px}
+.ev:before{
+  content:"";position:absolute;left:-24px;top:7px;width:11px;height:11px;
+  border-radius:50%;background:var(--cy);box-shadow:0 0 0 3px var(--bg2);
+}
+.ev.bad:before{background:var(--or)}
+.ev.good:before{background:var(--gr)}
+.ev .dt{font-size:12px;color:var(--dim2);font-weight:600;letter-spacing:.05em}
+.ev .tx{font-size:14.5px;margin-top:3px}
+.ev .tx b{color:var(--txt)}
+
+/* ---------- corrections ---------- */
+.fix{
+  background:var(--panel);border:1px solid var(--line);border-radius:13px;
+  padding:18px 20px;margin-bottom:12px;
+}
+.fix .hd{display:flex;align-items:baseline;gap:10px;margin-bottom:12px;flex-wrap:wrap}
+.fix .hd .i{color:var(--yl);font-weight:700;font-size:13px}
+.fix .hd .ti{font-size:16px;font-weight:650}
+.ba{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+@media(max-width:720px){.ba{grid-template-columns:1fr}}
+.ba>div{border-radius:10px;padding:13px 15px;font-size:13.5px;line-height:1.6}
+.ba .old{background:rgba(255,93,93,.09);border:1px dashed rgba(255,93,93,.4)}
+.ba .new{background:rgba(95,214,138,.09);border:1px solid rgba(95,214,138,.38)}
+.ba .tag{font-size:11px;font-weight:700;letter-spacing:.08em;display:block;margin-bottom:6px}
+.ba .old .tag{color:var(--rd)}
+.ba .new .tag{color:var(--gr)}
+.ba .new .tag{color:var(--gr)}
+
+/* ---------- calc ---------- */
+.calc{display:grid;grid-template-columns:1.15fr .85fr;gap:18px}
+@media(max-width:820px){.calc{grid-template-columns:1fr}}
+input[type=range]{width:100%;accent-color:var(--cy);margin:10px 0 4px}
+.ctl label{font-size:13.5px;color:var(--dim);display:flex;justify-content:space-between}
+.ctl label b{color:var(--cy);font-size:15px}
+.out{
+  background:linear-gradient(160deg,#123c4e,#0f2637);
+  border:1px solid var(--cy2);border-radius:12px;padding:20px;text-align:center;
+}
+.out .lb{font-size:12.5px;color:var(--dim);letter-spacing:.08em}
+.out .v{font-size:44px;font-weight:700;color:var(--cy);line-height:1.15;margin:6px 0}
+.out .v span{font-size:17px;font-weight:500;color:var(--dim)}
+.out .note{font-size:12.5px;color:var(--dim2);border-top:1px solid var(--line);margin-top:12px;padding-top:12px}
+
+/* ---------- checklist ---------- */
+.chk{list-style:none}
+.chk li{
+  display:flex;gap:13px;align-items:flex-start;padding:13px 15px;
+  background:var(--panel);border:1px solid var(--line);border-radius:10px;margin-bottom:9px;
+}
+.chk .bx{
+  flex:0 0 auto;width:19px;height:19px;border-radius:5px;border:2px solid var(--or);
+  margin-top:3px;
+}
+.chk .q{font-size:14.5px}
+.chk .q b{color:var(--or)}
+.chk .w{font-size:12.5px;color:var(--dim2);margin-top:3px}
+
+.tag{
+  display:inline-block;font-size:11.5px;font-weight:700;padding:2px 9px;
+  border-radius:20px;letter-spacing:.04em;vertical-align:middle;
+}
+.tag.ok{background:rgba(95,214,138,.15);color:var(--gr)}
+.tag.warn{background:rgba(255,207,77,.15);color:var(--yl)}
+.tag.no{background:rgba(255,93,93,.15);color:var(--rd)}
+.tag.core{background:rgba(79,208,224,.16);color:var(--cy)}
+
+footer{border-top:1px solid var(--line);margin-top:44px;padding-top:22px;color:var(--dim2);font-size:12.5px}
+.mini{font-size:12.5px;color:var(--dim2);margin-top:8px}
+.hl{color:var(--yl);font-weight:600}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="wrap">
+    <div class="kicker">核电冷源 · 柔性拦污网 · 方向1 单独立项</div>
+    <h1>水下网具状态监测：结论一页看懂
+      <small>范围已收窄：只做「状态监测」，清洗（方向2）整体移出 ｜ 2026-09-24</small>
+    </h1>
+    <div class="hero">
+      <div class="big">
+        造一台能<b>逐跨自主到位</b>的监测机器人，沿浮纲展开一张 <b>2.5D 网系地图</b>，
+        把每张<b>平网</b>上的 <b>侧向间隙、底部间隙、缺块/破洞、网绳变形</b>标进格子。<br>
+        <span style="font-size:15px;color:var(--dim)">
+          <b>只测平网，不钻网兜</b>（清洗才是洗兜，那是另一件事）｜
+          不洗网 → 不需高压射流、不需泵站、<b>不会自己制造浑浊</b> → 部署岸基。
+        </span>
+      </div>
+    </div>
+  </div>
+</header>
+
+<div class="wrap">
+
+<!-- ============ 1 现场是什么 ============ -->
+<section>
+  <h2><span class="n">1</span>现场到底是什么样的</h2>
+  <div class="sub">顺着水流方向看的断面。点下面的标记看每一项在测什么。</div>
+
+  <div class="diag">
+    <svg viewBox="0 0 1000 430" id="svg1">
+      <defs>
+        <linearGradient id="water" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stop-color="#1a5c72" stop-opacity=".55"/>
+          <stop offset="100%" stop-color="#0b2a38" stop-opacity=".85"/>
+        </linearGradient>
+        <linearGradient id="bed" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stop-color="#4a4034"/><stop offset="100%" stop-color="#2a241c"/>
+        </linearGradient>
+      </defs>
+
+      <!-- water body -->
+      <rect x="0" y="55" width="1000" height="340" fill="url(#water)"/>
+      <!-- bed -->
+      <rect x="0" y="392" width="1000" height="38" fill="url(#bed)"/>
+      <line x1="0" y1="392" x2="1000" y2="392" stroke="#6b5a44" stroke-width="1"/>
+
+      <!-- flow arrows -->
+      <g opacity=".75">
+        <path d="M60 32 h70" stroke="#ffcf4d" stroke-width="2.5" fill="none"/>
+        <path d="M130 32 l-9 -5 v10 z" fill="#ffcf4d"/>
+        <path d="M330 32 h70" stroke="#ffcf4d" stroke-width="2.5" fill="none"/>
+        <path d="M400 32 l-9 -5 v10 z" fill="#ffcf4d"/>
+        <path d="M600 32 h70" stroke="#ffcf4d" stroke-width="2.5" fill="none"/>
+        <path d="M670 32 l-9 -5 v10 z" fill="#ffcf4d"/>
+        <path d="M860 32 h70" stroke="#ffcf4d" stroke-width="2.5" fill="none"/>
+        <path d="M930 32 l-9 -5 v10 z" fill="#ffcf4d"/>
+        <text x="486" y="26" class="lbl" fill="#ffcf4d" font-weight="700">水 流 方 向 →</text>
+      </g>
+      <text x="16" y="78" class="lbl" fill="#8fd8e8" font-weight="700">上游 港池/明渠</text>
+      <text x="880" y="78" class="lbl" fill="#8fd8e8" font-weight="700" text-anchor="end">下游 → 泵房</text>
+
+      <!-- pier deck -->
+      <rect x="40" y="46" width="920" height="14" fill="#8f9aa2"/>
+      <rect x="40" y="60" width="920" height="8" fill="#5f6a72"/>
+
+      <!-- piles: 3 columns -->
+      <g id="piles">
+        <rect x="150" y="62" width="46" height="330" fill="#b9c3c9"/>
+        <rect x="150" y="62" width="10" height="330" fill="#d6dee2" opacity=".5"/>
+        <rect x="150" y="46" width="70" height="16" fill="#9aa4ab"/>
+
+        <rect x="470" y="62" width="46" height="330" fill="#b9c3c9"/>
+        <rect x="470" y="62" width="10" height="330" fill="#d6dee2" opacity=".5"/>
+        <rect x="470" y="46" width="70" height="16" fill="#9aa4ab"/>
+
+        <rect x="790" y="62" width="46" height="330" fill="#b9c3c9"/>
+        <rect x="790" y="62" width="10" height="330" fill="#d6dee2" opacity=".5"/>
+        <rect x="790" y="46" width="70" height="16" fill="#9aa4ab"/>
+      </g>
+
+      <!-- ① 平网（一道，挂于 pile1 与 pile2 之间，被流拉斜鼓包） —— 唯一检查对象 -->
+      <path d="M196 66 Q 330 92 464 66 L 464 78 Q 330 108 196 78 Z" fill="#e8b96a" opacity=".85"/>
+      <path d="M196 78 Q 330 200 464 78 L 464 300 Q 330 330 196 300 Z"
+            fill="#d9c9a8" opacity=".42" stroke="#c9b88f" stroke-width="1.2"/>
+      <!-- mesh hint -->
+      <g stroke="#a89878" stroke-width=".5" opacity=".35">
+        <path d="M240 84 Q 330 190 420 84"/><path d="M275 86 Q 330 210 385 86"/>
+        <path d="M196 140 Q 330 240 464 140"/><path d="M196 220 Q 330 290 464 220"/>
+      </g>
+
+      <!-- ② 网兜（一排，一跨一个）—— 不在检查范围，置灰 -->
+      <g opacity=".22">
+        <path d="M516 66 Q 650 92 784 66 L 784 78 Q 650 108 516 78 Z" fill="#e8b96a" opacity=".85"/>
+        <path d="M516 78 Q 650 210 784 78 L 782 250 Q 650 358 518 250 Z"
+              fill="#a8bd8c" opacity=".45" stroke="#8ea66a" stroke-width="1.2"/>
+        <path d="M518 250 Q 650 358 782 250" fill="#7d9457" opacity=".5"/>
+      </g>
+      <text x="650" y="112" class="lbl" text-anchor="middle" fill="#8aa3b0" font-weight="700" font-size="14">网兜（一排）</text>
+      <text x="650" y="131" class="lbl" text-anchor="middle" fill="#6d90a5" font-size="11">一跨一个，收污用</text>
+      <text x="650" y="150" class="lbl" text-anchor="middle" fill="#8aa3b0" font-size="12" font-weight="700">✕ 不在检查范围</text>
+
+      <!-- net labels -->
+      <text x="330" y="126" class="lbl" text-anchor="middle" fill="#fff" font-weight="700" font-size="14">平网（一道）</text>
+      <text x="330" y="145" class="lbl" text-anchor="middle" fill="#ffcf4d" font-size="11" font-weight="700">唯一检查对象</text>
+
+      <!-- ① 侧隙 marker (平网 left edge vs pile1) -->
+      <g class="t" data-i="0">
+        <path d="M196 130 L 214 130" stroke="#ff5d5d" stroke-width="2"/>
+        <path d="M196 124 v12 M214 124 v12" stroke="#ff5d5d" stroke-width="2"/>
+        <circle cx="205" cy="130" r="11" fill="#1a2a36" stroke="#ff5d5d" stroke-width="1.5"/>
+        <text x="205" y="134" class="num" text-anchor="middle">1</text>
+        <text x="232" y="126" class="lbl" fill="#ff8f8f" font-weight="700">侧向间隙</text>
+        <text x="232" y="143" class="lbl" fill="#ff8f8f" font-size="11">网 ↔ 桩</text>
+      </g>
+
+      <!-- ② 底缝 marker -->
+      <g class="t" data-i="1">
+        <path d="M300 300 L 300 392" stroke="#ff5d5d" stroke-width="2"/>
+        <path d="M294 300 h12 M294 392 h12" stroke="#ff5d5d" stroke-width="2"/>
+        <circle cx="300" cy="346" r="11" fill="#1a2a36" stroke="#ff5d5d" stroke-width="1.5"/>
+        <text x="300" y="350" class="num" text-anchor="middle">2</text>
+        <text x="316" y="342" class="lbl" fill="#ff8f8f" font-weight="700">底部间隙</text>
+        <text x="316" y="359" class="lbl" fill="#ff8f8f" font-size="11">底纲 ↔ 渠底/底板</text>
+      </g>
+
+      <!-- ③ 破损 marker on 平网：缺块 + 破洞 -->
+      <g class="t" data-i="2">
+        <path d="M330 196 q 10 -12 20 0 q 10 12 20 0" stroke="#ff5d5d" stroke-width="2" fill="none"/>
+        <path d="M378 258 l 12 -10 l 10 12 l -12 10 z" stroke="#ff5d5d" stroke-width="2" fill="rgba(255,93,93,.18)"/>
+        <circle cx="346" cy="176" r="11" fill="#1a2a36" stroke="#ff5d5d" stroke-width="1.5"/>
+        <text x="346" y="180" class="num" text-anchor="middle">3</text>
+        <text x="366" y="172" class="lbl" fill="#ff8f8f" font-weight="700">缺块 / 破洞</text>
+        <text x="410" y="256" class="lbl" fill="#ff8f8f" font-size="11">洞</text>
+      </g>
+
+      <!-- ④ 网绳变形 marker：网体鼓包偏斜 + 纲绳离位 -->
+      <g class="t" data-i="3">
+        <path d="M196 78" stroke="none"/>
+        <path d="M196 66 L 196 300" stroke="#ffcf4d" stroke-width="1.2" stroke-dasharray="4 3"/>
+        <path d="M380 78 Q 408 150 430 240" stroke="#ffcf4d" stroke-width="1.6" fill="none"/>
+        <circle cx="420" cy="200" r="11" fill="#1a2a36" stroke="#ffcf4d" stroke-width="1.5"/>
+        <text x="420" y="204" class="num" text-anchor="middle" fill="#ffcf4d">4</text>
+        <text x="440" y="196" class="lbl" fill="#ffe9a8" font-weight="700">网绳变形</text>
+        <text x="440" y="213" class="lbl" fill="#ffe9a8" font-size="11">网体鼓包偏斜 · 纲绳离位</text>
+      </g>
+
+      <!-- bed label -->
+      <text x="500" y="420" class="lbl" text-anchor="middle" fill="#a08a68">渠底 / 抛石 / 结构底板（底缝基准面，待客户确认）</text>
+
+      <!-- pile label -->
+      <text x="173" y="200" class="lbl" fill="#dbe6ec" font-weight="700" transform="rotate(-90 173 200)" text-anchor="middle">桩（大直径混凝土 + 承台）</text>
+    </svg>
+  </div>
+
+  <div class="row" id="legend1">
+    <div class="pill on" data-i="0"><div class="k">① 网缝</div><div class="t2">侧向间隙</div><div class="d">平网边缘与桩之间漏拦的缝。课题组自己在立面图上<b>红框标注</b>的参数——这是客户已经认的验收量。</div></div>
+    <div class="pill" data-i="1"><div class="k">② 网缝</div><div class="t2">底部间隙</div><div class="d">底纲离渠底/底板多高。基准面是泥面、抛石还是底板，客户必须给。</div></div>
+    <div class="pill" data-i="2"><div class="k">③ 破损</div><div class="t2">缺块 / 破洞</div><div class="d">网衣上<b>少了的部分</b>和<b>孔洞</b>。注意<b>面积误差 = 尺度误差 × 2</b>；旧网期被附着物糊住，检出率会低。</div></div>
+    <div class="pill" data-i="3"><div class="k">④ 变形</div><div class="t2">网绳变形</div><div class="d">网体被流拉出鼓包/偏斜、纲绳离位、网缘脱桩。柔性网天生会动，<b>要区分"正常变形"和"失效变形"</b>——这是本方向最难的判定。</div></div>
+  </div>
+
+  <div class="card" style="border-color:var(--or);background:rgba(255,146,77,.06)">
+    <p style="font-size:13.5px;line-height:1.7">
+      <span class="tag warn">刚撤回的一个错</span>
+      我一度说本现场是「<b>3+n 三道网</b>」（W1 粗平网 / W2 中目 / W3 细目网兜），
+      来源只是资料包《02_literature.md》里一行二手转述，说的是<b>一篇设计论文</b>。
+      对照课题立面图、俯视图和现场照片后确认：<span class="hl">本现场是一道平网 + 一排网兜，只有一道。</span>
+      <b>侧隙只在平网上测，网兜不测侧隙</b> —— 所以工作量比原先估的还少，不是多。
+    </p>
+  </div>
+</section>
+
+<!-- ============ 2 关键更正 ============ -->
+<section>
+  <h2><span class="n">2</span>通读全部资料后：六项更正 + 一项范围再收窄</h2>
+  <div class="sub">13 个月的现场照片 + 课题 PDF 内嵌图，改掉了之前基于少量材料做的几个结论。</div>
+
+  <div class="fix">
+    <div class="hd"><span class="i">已撤回</span><span class="ti">「三道网」是错的 —— 现场是一道平网 + 一排网兜</span></div>
+    <div class="ba">
+      <div class="old"><span class="tag">我之前说错</span>按资料包《02_literature.md》里一行二手转述（熊碧露 2022 论文的「3+n：W1/W2/W3」），<b>说本现场有三道网、侧隙要测三次、工作量乘 3。</b></div>
+      <div class="new"><span class="tag">一手材料</span>课题<b>立面图：每跨就一张网</b>，高 9200，挂两桩之间；<b>俯视图：一排网兜</b>；照片里就是<b>一排兜，每兜跨两柱</b>。<span class="hl">侧隙只在平网上测。</span>「3+n」是设计论文的写法，不是本现场实测。</div>
+    </div>
+  </div>
+
+  <div class="fix">
+    <div class="hd"><span class="i">范围再收窄</span><span class="ti">兜不测 —— 机器人不进网兜，也不钻到兜里去</span></div>
+    <div class="ba">
+      <div class="old"><span class="tag">我一度想测</span>兜形倾角（规范 ≥70°）、兜内堵塞、兜尾状态。</div>
+      <div class="new"><span class="tag">现在</span>网兜结构本身<b>就会挡住里面的东西，而且形状是软的、会鼓</b>，机器人进去既看不见也出不来。<span class="hl">监测只做平网：缝、缺块/破洞、网绳变形。</span>清洗才是洗兜（那是方向2，不在本范围）。</div>
+    </div>
+  </div>
+
+  <div class="fix">
+    <div class="hd"><span class="i">更正 2</span><span class="ti">浊度不是常数，存在真实清水窗口</span></div>
+    <div class="ba">
+      <div class="old"><span class="tag">之前</span>默认"全浑浊、视觉不可见"，方案被动分级应对。</div>
+      <div class="new"><span class="tag">现在</span>2026-04-26 那组照片里，水是<span class="hl">绿的、清的、能看清水下网体</span>；而 2024-08 / 2025-12 是棕褐不透明。<b>策略改为：主支排程等清水窗口，声呐+接触兜底。</b></div>
+    </div>
+  </div>
+
+  <div class="fix">
+    <div class="hd"><span class="i">更正 3</span><span class="ti">"全浑浊"是方向2 自盲的结论，不是方向1 的常态</span></div>
+    <div class="ba">
+      <div class="old"><span class="tag">之前</span>把"浑浊到视觉不可见"当成本题环境前提。</div>
+      <div class="new"><span class="tag">现在</span><b>浑浊是清洗自己制造的。</b>方向1 不洗网、不射流、不搅底泥，遇到的是自然浊度，而自然浊度<span class="hl">会随季节/潮汐变化</span>。这是范围收窄换来的最大红利。</div>
+    </div>
+  </div>
+
+  <div class="fix">
+    <div class="hd"><span class="i">更正 4</span><span class="ti">桩比三维模型大得多</span></div>
+    <div class="ba">
+      <div class="old"><span class="tag">之前</span>3D 模型用底径 1.4 m 圆柱桩。</div>
+      <div class="new"><span class="tag">现在</span>照片里是<span class="hl">大直径混凝土圆柱 + 很厚的承台梁</span>，目测 1.5–2 m。<b>这是好消息</b>：桩越大，特征越可测——用桩当标尺、当声呐目标、当接触基准，都比设想中容易。</div>
+    </div>
+  </div>
+
+  <div class="fix">
+    <div class="hd"><span class="i">更正 5</span><span class="ti">跨数第一次能数出来</span></div>
+    <div class="ba">
+      <div class="old"><span class="tag">之前</span>不知道一个厂址有多少跨，工期无法估。</div>
+      <div class="new"><span class="tag">现在</span>从全景照片数柱：<b>每个结构约 8–10 跨</b>；结合文献（红沿河 580 m / 14 段）→<span class="hl">全厂约 10–30 跨</span>。方向1 最需要的工程量参数，终于有了。</div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 3 定位 ============ -->
+<section>
+  <h2><span class="n">3</span>没有里程计，怎么知道自己在哪</h2>
+  <div class="sub">柔性网会变形（环境非静态）＋ 推进器驱动（无轮式里程计）＋ 浑水无特征点 → <b>SLAM 三个前提全破</b>。替代方案：不建网面图，只建台账。</div>
+
+  <div class="diag">
+    <svg viewBox="0 0 1000 300" id="svg2">
+      <rect width="1000" height="300" fill="#0c1e2b"/>
+      <!-- pile row (plan view) -->
+      <g id="pileRow"></g>
+      <!-- dimension line -->
+      <line x1="120" y1="238" x2="880" y2="238" stroke="#3d6d8c" stroke-width="1.2"/>
+      <g id="dims"></g>
+      <!-- signature band -->
+      <rect x="120" y="256" width="760" height="26" rx="6" fill="#123c4e" stroke="#2b9fb5"/>
+      <g id="sig"></g>
+      <text x="120" y="212" class="lbl" fill="#8fd8e8" font-weight="700">俯视：桩排 + 节距签名</text>
+      <text x="120" y="278" class="lbl" fill="#6d90a5" font-size="11.5">18 m / 16 m 交替 = 唯一的"跨号签名"：识别出"这是长跨还是短跨"，就知道自己在第几跨。</text>
+      <!-- robot -->
+      <g id="robot" transform="translate(480,110)">
+        <circle r="26" fill="#2b9fb5" opacity=".9"/>
+        <circle r="26" fill="none" stroke="#7fe3f0" stroke-width="2"/>
+        <circle r="9" fill="#0a1620"/>
+        <text y="-34" class="lbl" fill="#7fe3f0" font-weight="700" text-anchor="middle" font-size="12">监测机器人</text>
+      </g>
+    </svg>
+  </div>
+
+  <div class="card">
+    <h3>课题图纸俯视图的连续尺寸链</h3>
+    <p style="font-size:20px;letter-spacing:.1em;color:var(--yl);font-weight:700;margin-bottom:12px">
+      18000 &nbsp;|&nbsp; 16000 &nbsp;|&nbsp; 18000 &nbsp;|&nbsp; 16000 &nbsp;|&nbsp; 18000 &nbsp;|&nbsp; 16000
+    </p>
+    <p><b>跨距不是常数，是两种节距交替。</b>这同时否掉了一个思路、又给了一个更好的：</p>
+    <div class="ba" style="margin-top:12px">
+      <div class="old"><span class="tag">否掉</span><b>"数桩 × 固定节距"</b>推累计距离——等距假设从第 3 跨起累积半个节距（1 m）误差。</div>
+      <div class="new"><span class="tag">改用</span><b>用节距的交替模式本身做跨号签名。</b>比数桩更鲁棒，因为节距本身携带跨号信息。</div>
+    </div>
+    <p class="mini">三层拓扑：L1 道 → 跨 → 缝 → 兜（全局身份）｜L2 每跨内部覆盖｜L3 跨相对导航。桩的探测：接触缓冲（最可靠，主用）→ 成像声呐 → 光学窗口（仅清水期校验）。</p>
+  </div>
+</section>
+
+<!-- ============ 4 浊度时间线 ============ -->
+<section>
+  <h2><span class="n">4</span>什么时候能干活：13 个月的现场记录</h2>
+  <div class="sub">照片跨 2024-07 至 2026-07，正好覆盖了从"全浊"到"全清"的完整区间。</div>
+
+  <div class="card" style="border-color:var(--or);background:rgba(255,146,77,.06)">
+    <p style="font-size:13.5px;color:var(--txt);line-height:1.7">
+      <span class="tag warn">来源与保留</span>
+      <b>以下全部来自《拦截网照片.zip》——你提供的一手资料，没有一条来自论文。</b><br>
+      <b>日期</b>取自 zip 目录的文件时间戳。我查过 EXIF，<span class="hl">15 张的拍摄时间全部被微信转存抹除</span>，
+      因此日期只能证明"这批文件被整理的时间"，<span class="hl">不能 100% 保证是拍摄当天</span>，正式引用需标 ⚠️。<br>
+      <b>水色 / 网色 / 平台 / 堆场</b>是我逐张看图的一手观察；而"<b>白色 = 新网、深褐 = 旧网</b>"是<span class="hl">我的推断</span>，照片里没有任何标注。<br>
+      <b>缺口</b>：15 张中 2 张未看（2025-06-10、2025-07-01），该时段为空。
+    </p>
+  </div>
+
+  <div class="card">
+    <div class="tl">
+      <div class="ev bad"><div class="dt">2024-07-09</div><div class="tx">棕绿水，网兜轮廓隐约可见；同时拍到<b>黄色模块化浮排平台</b>（带走道、设备、上岸坡道）——这就是课题里"水面清理平台"的实物参照。</div></div>
+      <div class="ev bad"><div class="dt">2024-08-30</div><div class="tx"><b>棕褐、浑</b>。网体深褐近黑、附着严重，水下不可见。</div></div>
+      <div class="ev bad"><div class="dt">2025-12-09 / 12-17</div><div class="tx"><b>棕褐、浑</b>。全景可见成排网兜挂在相邻柱之间（可数出约 8–10 跨），并拍到<b>黄色收放网门吊</b>与甲板绞车。</div></div>
+      <div class="ev"><div class="dt">2026-01-06</div><div class="tx">水浑，但网是<b>灰白色新网</b>——看起来刚换过。</div></div>
+      <div class="ev"><div class="dt">2026-04-26</div><div class="tx"><b>绿、清，能清楚看见水下网体和兜。</b>网呈<b>白色/米色 = 新网</b>。这是光学测量可行的直接证据。</div></div>
+      <div class="ev bad"><div class="dt">2026-07-16</div><div class="tx">拍到<b>堆场上大量换下来的旧网</b>（深褐、附满海生物）——印证文献里"细目网<b>以换代清</b>"。同时说明：<b>旧网期的破损检出率会明显低于新网期</b>。</div></div>
+    </div>
+
+    <div class="ba" style="margin-top:16px">
+      <div class="new" style="grid-column:1/-1"><span class="tag">结论</span>
+        <b>浊度会变，策略就该跟着变：</b>主支是<span class="hl">排程等清水窗口集中作业</span>；声呐 + 接触缓冲作兜底；浊度计全程记录，让每条数据都带可信度标注。<br>
+        <b>必须写明的能力边界：</b>全浊期侧隙可测（接触限位），<span class="hl">破损不可测</span>。任何声称"全浑浊也能识别破损"的方案，都是在赌客户不懂水。
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 5 系统减法 ============ -->
+<section>
+  <h2><span class="n">5</span>系统做什么减法</h2>
+  <div class="sub">课题 PDF 图2 是一张完整的清洗系统图。方向1 = <b>同一张图删掉整条水路</b>。</div>
+
+  <div class="diag">
+    <svg viewBox="0 0 1000 250">
+      <!-- deleted chain -->
+      <text x="500" y="24" class="lbl" text-anchor="middle" fill="#ff8f8f" font-weight="700" font-size="13">随方向2 一起删掉的东西</text>
+      <g font-size="12.5" text-anchor="middle">
+        <g class="t" style="cursor:default">
+          <rect x="18" y="38" width="130" height="46" rx="9" fill="rgba(255,93,93,.10)" stroke="#ff5d5d" stroke-dasharray="4 3"/>
+          <text x="83" y="60" fill="#ffc2c2">高压水泵站</text><text x="83" y="77" fill="#a07070" font-size="10.5">45/110 kW</text>
+        </g>
+        <g>
+          <rect x="162" y="38" width="118" height="46" rx="9" fill="rgba(255,93,93,.10)" stroke="#ff5d5d" stroke-dasharray="4 3"/>
+          <text x="221" y="60" fill="#ffc2c2">高压长/短管</text><text x="221" y="77" fill="#a07070" font-size="10.5">唯一理由是射流</text>
+        </g>
+        <g>
+          <rect x="294" y="38" width="112" height="46" rx="9" fill="rgba(255,93,93,.10)" stroke="#ff5d5d" stroke-dasharray="4 3"/>
+          <text x="350" y="60" fill="#ffc2c2">水管电缆绞车</text><text x="350" y="77" fill="#a07070" font-size="10.5">简化为电缆绞车</text>
+        </g>
+        <g>
+          <rect x="420" y="38" width="112" height="46" rx="9" fill="rgba(255,93,93,.10)" stroke="#ff5d5d" stroke-dasharray="4 3"/>
+          <text x="476" y="60" fill="#ffc2c2">水泵</text><text x="476" y="77" fill="#a07070" font-size="10.5">整套水力链</text>
+        </g>
+        <g>
+          <rect x="546" y="38" width="118" height="46" rx="9" fill="rgba(255,93,93,.10)" stroke="#ff5d5d" stroke-dasharray="4 3"/>
+          <text x="605" y="60" fill="#ffc2c2">水带 / 水管接头</text><text x="605" y="77" fill="#a07070" font-size="10.5">不再需要</text>
+        </g>
+        <g>
+          <rect x="678" y="38" width="120" height="46" rx="9" fill="rgba(255,93,93,.10)" stroke="#ff5d5d" stroke-dasharray="4 3"/>
+          <text x="738" y="60" fill="#ffc2c2">空化水射流设备</text><text x="738" y="77" fill="#a07070" font-size="10.5">课题列为"辅件"</text>
+        </g>
+        <g>
+          <rect x="812" y="38" width="170" height="46" rx="9" fill="rgba(255,146,77,.12)" stroke="#ff924d" stroke-dasharray="4 3"/>
+          <text x="897" y="60" fill="#ffd2a8">射流反冲平衡问题</text><text x="897" y="77" fill="#a07850" font-size="10.5">随之消失</text>
+        </g>
+      </g>
+
+      <!-- kept / new -->
+      <text x="500" y="122" class="lbl" text-anchor="middle" fill="#8fe8b8" font-weight="700" font-size="13">方向1 留下 + 新增</text>
+      <g font-size="12.5" text-anchor="middle">
+        <g>
+          <rect x="18" y="136" width="150" height="52" rx="9" fill="rgba(95,214,138,.10)" stroke="#5fd68a"/>
+          <text x="93" y="158" fill="#c8f5d8" font-weight="700">监测机器人</text><text x="93" y="176" fill="#7fae93" font-size="10.5">清洗机做减法：无高压水路</text>
+        </g>
+        <g>
+          <rect x="182" y="136" width="140" height="52" rx="9" fill="rgba(95,214,138,.10)" stroke="#5fd68a"/>
+          <text x="252" y="158" fill="#c8f5d8">零浮力电缆</text><text x="252" y="176" fill="#7fae93" font-size="10.5">唯一系留</text>
+        </g>
+        <g>
+          <rect x="336" y="136" width="140" height="52" rx="9" fill="rgba(95,214,138,.10)" stroke="#5fd68a"/>
+          <text x="406" y="158" fill="#c8f5d8">地面站</text><text x="406" y="176" fill="#7fae93" font-size="10.5">单人，无高压远控</text>
+        </g>
+        <g>
+          <rect x="490" y="136" width="150" height="52" rx="9" fill="rgba(79,208,224,.14)" stroke="#4fd0e0"/>
+          <text x="565" y="158" fill="#bff0f8" font-weight="700">线激光 / 结构光</text><text x="565" y="176" fill="#6fa8b8" font-size="10.5">测间隙</text>
+        </g>
+        <g>
+          <rect x="654" y="136" width="140" height="52" rx="9" fill="rgba(79,208,224,.14)" stroke="#4fd0e0"/>
+          <text x="724" y="158" fill="#bff0f8" font-weight="700">限力接触缓冲</text><text x="724" y="176" fill="#6fa8b8" font-size="10.5">探桩 + 定位主用</text>
+        </g>
+        <g>
+          <rect x="808" y="136" width="174" height="52" rx="9" fill="rgba(255,207,77,.13)" stroke="#ffcf4d"/>
+          <text x="895" y="158" fill="#ffe9a8" font-weight="700">仰视相机 + 浊度计</text><text x="895" y="176" fill="#a89a60" font-size="10.5">测底缝 + 记录可信度</text>
+        </g>
+      </g>
+
+      <text x="500" y="216" class="lbl" text-anchor="middle" fill="#8fe8b8" font-weight="700" font-size="14">
+        系统件数不到方向2 的三分之一 —— 这是可以直接对外讲的立项论据
+      </text>
+      <text x="500" y="238" class="lbl" text-anchor="middle" fill="#6d90a5" font-size="11.5">
+        部署随之确定：方案①岸基模块化（不工作收纳室内）。方案②"加装到水面平台"的唯一理由就是加空化射流设备，设备出范围后理由消失。
+      </text>
+    </svg>
+  </div>
+</section>
+
+<!-- ============ 3.5 三个任务 ============ -->
+<section>
+  <h2><span class="n">6</span>拆成三个问题（对回你 GitHub 仓库的任务拆分）</h2>
+  <div class="sub">反着从 <code style="color:var(--cy)">docs/tasks/01·02·03</code> 推回来：这三件事合起来才是"机器人对网的监测"。</div>
+
+  <div class="row">
+    <div class="pill" style="cursor:default">
+      <div class="k">任务 1 · mapping</div>
+      <div class="t2">2.5D 网系地图</div>
+      <div class="d">
+        沿浮纲把网面<b>展开</b>成栅格：横轴 = 第几道第几跨，纵轴 = 水深。<br>
+        每格记：离网距 d、离底距 h、污损、<b>可观测性</b>。<br>
+        <b>特殊地形写进格子：道、跨、缝、洞、底隙。</b><br>
+        <span style="color:var(--dim2)">关键：跨号来自桩距先验，<b>潮位变、d/h 变，跨号不能变</b>。看不见的格子标 unknown，不虚报洞。</span>
+      </div>
+    </div>
+    <div class="pill" style="cursor:default">
+      <div class="k">任务 2 · vision</div>
+      <div class="t2">低能见度识网</div>
+      <div class="d">
+        浑水低照下仍要看清<b>网结、纲线、孔</b>，给地图提供孔级观测。<br>
+        两步：水下图像恢复（UIE，去散射纠色）→ 结节/纲线/孔分割。<br>
+        <span style="color:var(--gr)">视觉不负责全局定位</span>，只负责"这一格我看到什么"。<br>
+        <span style="color:var(--dim2)">浊度过高直接输出"本格不可观测"，不硬猜。</span>
+      </div>
+    </div>
+    <div class="pill" style="cursor:default">
+      <div class="k">任务 3 · self-state</div>
+      <div class="t2">自身与网的关系</div>
+      <div class="d">
+        机器人必须知道自己在<b>哪一跨、多深、离网多远、是否与网平行</b>。<br>
+        状态 x = <b>(s, z, d, psi)</b>：跨号、水深、离网距、姿态角。<br>
+        <span style="color:var(--yl)">没有这一项，2.5D 地图对不齐</span>——这是贴网行走的前提。<br>
+        <span style="color:var(--dim2)">学术名：可变形表面上的相对位姿调节；不是开水域 AUV 导航。</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3>这三个问题对应你原话里的三句话</h3>
+    <div class="ba">
+      <div><span class="tag" style="color:var(--cy)">我是谁</span>自身状态：位姿 (s,z,d,ψ)、是否在作业窗内。<br><span style="color:var(--dim2)">→ 任务 3</span></div>
+      <div><span class="tag" style="color:var(--cy)">我在哪</span>网系定位：2.5D 网图 M(s,z)，不做渠道三维房间图。<br><span style="color:var(--dim2)">→ 任务 1</span></div>
+      <div><span class="tag" style="color:var(--cy)">我看见什么</span>低能见度识网：UIE 恢复 + 结节/孔分割，洞/缝/底隙写进格子。<br><span style="color:var(--dim2)">→ 任务 2</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 6 工作量 ============ -->
+<section>
+  <h2><span class="n">7</span>工期第一次可以估</h2>
+  <div class="sub">拖动滑块，看一次全厂普查要多久。</div>
+
+  <div class="calc">
+    <div class="card">
+      <div class="ctl">
+        <label>跨数 <b><span id="vSpan">20</span> 跨</b></label>
+        <input type="range" id="sSpan" min="6" max="40" value="20">
+        <div class="mini">照片数柱估 8–10 跨/结构；全厂量级 10–30 跨</div>
+      </div>
+      <div class="ctl" style="margin-top:14px">
+        <label>每跨测量组数 <b><span id="vNet">5</span> 组</b></label>
+        <input type="range" id="sNet" min="3" max="8" value="5">
+        <div class="mini">侧隙 + 底缝 + 缺块/破洞 + 网绳变形，<b>全部在平网上</b>；不钻网兜。<b>只有一道平网</b>，不是三道。</div>
+      </div>
+      <div class="ctl" style="margin-top:14px">
+        <label>单跨耗时 <b><span id="vMin">4</span> 分钟</b></label>
+        <input type="range" id="sMin" min="2" max="8" value="4">
+        <div class="mini">含到位、每道网测侧隙/底缝、拍破损、转跨</div>
+      </div>
+    </div>
+
+    <div class="out">
+      <div class="lb">一次全厂普查 · 纯水下时间</div>
+      <div class="v"><span id="oH">1</span><span> 小时 </span><span id="oM">20</span><span> 分</span></div>
+      <div class="note">
+        共 <b id="oGrp" style="color:var(--cy)">60</b> 组测量 ·
+        加下放/回收/等清水窗口，<b style="color:var(--gr)">一个白班可完成一次全厂普查</b><br>
+        <span style="color:var(--dim2)">这是可以写进课题的工期承诺</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 7 待客户输入 ============ -->
+<section>
+  <h2><span class="n">8</span>还卡在客户输入的</h2>
+  <div class="sub">前三条不定，技术方案就是空的——它们是客户的运维/安全参数，不该由我猜。</div>
+  <ul class="chk">
+    <li><div class="bx"></div><div><div class="q"><b>1. 潮位变化到底有多大？</b> <span class="tag core">决定地图能不能用</span></div><div class="w">任务1 的验收标准是"潮位变了跨号不乱"。可潮位一变，网就鼓、就离底，同一格的 d 和 h 全变。<b>潮差多少、网变形多少，决定 M(s,z) 是建一次就够，还是要按潮位分层建。</b></div></div></li>
+    <li><div class="bx"></div><div><div class="q"><b>2. "实时"到哪一级？</b> 机上即时出数，还是上岸后出报告？</div><div class="w">决定要板上算力 + 标定链，还是普通观测级 + 后处理。<b>成本分水岭。</b></div></div></li>
+    <li><div class="bx"></div><div><div class="q"><b>3. 侧隙阈值多少算超限？</b></div><div class="w">决定测量精度需求——±20 mm 与 ±200 mm 是两代产品。</div></div></li>
+    <li><div class="bx"></div><div><div class="q"><b>4. 破损面积多大算要换网/补网？</b></div><div class="w">决定检出下限与相机分辨率。</div></div></li>
+    <li><div class="bx"></div><div><div class="q"><b>5. 底缝基准面是泥面、抛石，还是结构底板？</b></div><div class="w">泥面会随淤积变，底板不变。我倾向底板，但要客户确认。</div></div></li>
+    <li><div class="bx"></div><div><div class="q"><b>6. 18000 / 16000 是否真交替？竣工图能否提供？</b></div><div class="w">跨号先验成立与否；也决定"桩当标尺"用哪个特征尺寸（圆的直径 vs 倒 T 的翼缘宽）。</div></div></li>
+    <li><div class="bx"></div><div><div class="q"><b>7. 网绳变形里，哪些算"正常"、哪些算"失效"？</b></div><div class="w">柔性网天生会鼓会斜，潮位一动形状就变。<b>没有一条失效判据，"变形"这个指标就没法验收</b>——这是四个指标里唯一没有规范依据的。</div></div></li>
+    <li><div class="bx"></div><div><div class="q"><b>8. 视频1「网具水下视频」能不能看？</b></div><div class="w">这是本方向的基准态样例，<b>也是我唯一还没看的一手素材</b>。看了它，浊度分级和检测难度就能定档。</div></div></li>
+    <li><div class="bx"></div><div><div class="q"><b>9. 旧网期的破损检出率预期？</b></div><div class="w">2026-07 堆场照片证明网在以换代清。白网上一个洞极明显，褐网上洞被附着物糊住——不能给一个全期一致的检出率承诺。</div></div></li>
+  </ul>
+</section>
+
+<footer>
+  <div><b style="color:var(--cy)">问题（一句话）</b>　一张能自主到位的监测机器人，沿浮纲展开 <b>2.5D 网系地图 M(s,z)</b>，把每张<b>平网</b>上的<b>侧向间隙、底部间隙、缺块/破洞、网绳变形</b>标进格子，看不见的格子标 <code>unknown</code>。<b>不钻网兜；不洗网。</b></div>
+  <div style="margin-top:8px"><b style="color:var(--cy)">对应仓库</b>　github.com/Dalaoyuan2020/underwater-net-perception ｜ <code>docs/tasks/01-mapping</code>（地图）· <code>02-underwater-vision</code>（识网）· <code>03-self-state</code>（自身姿态）· <code>docs/schema/net-grid.example.json</code>（栅格格式）· <code>viz/net-frame-2p5d.html</code>、<code>net-structure-3d.html</code></div>
+  <div style="margin-top:8px"><b style="color:var(--cy)">本页新增的一手证据（仓库里还没有）</b>　课题 PDF 内嵌三张图（此前未读）｜18 m/16 m 跨距交替、网高 9200、侧隙被客户红框标注｜13 个月现场照片：桩实际尺寸、网新旧两态、浊度从全浊到全清｜每结构约 8–10 跨</div>
+  <div style="margin-top:8px;color:var(--dim2)">未证实项均已在文档中标 ⚠️ / ❓。照片日期来自 zip 文件时间戳，EXIF 已被微信抹除，不能 100% 保证是拍摄当天。</div>
+</footer>
+
+</div>
+
+<script>
+/* ---------- 断面图：标记与图例联动 ---------- */
+const marks = document.querySelectorAll('#svg1 .t');
+const pills = document.querySelectorAll('#legend1 .pill');
+function pick(i){
+  marks.forEach(m=>m.classList.toggle('on', m.dataset.i===String(i)));
+  pills.forEach(p=>p.classList.toggle('on', p.dataset.i===String(i)));
+}
+marks.forEach(m=>m.addEventListener('click',()=>pick(+m.dataset.i)));
+pills.forEach(p=>p.addEventListener('click',()=>pick(+p.dataset.i)));
+
+/* ---------- 俯视图：生成桩排、尺寸、签名 ---------- */
+const NS='http://www.w3.org/2000/svg';
+const el=(t,a={})=>{const e=document.createElementNS(NS,t);for(const k in a)e.setAttribute(k,a[k]);return e;};
+const pileRow=document.getElementById('pileRow');
+const dims=document.getElementById('dims');
+const sig=document.getElementById('sig');
+const segs=[18,16,18,16,18,16];          // m
+const x0=120, unit=760/segs.reduce((a,b)=>a+b,0); // px per m
+let x=x0;
+const piles=[];
+segs.forEach((s,i)=>{
+  const w=s*unit;
+  // pile at both ends
+  piles.push(x);
+  // span band
+  pileRow.appendChild(el('rect',{x:x,y:60,width:w,height:120,fill:'rgba(79,208,224,.07)',stroke:'#2a4d66'}));
+  // fake net bags inside span
+  for(let k=0;k<4;k++){
+    const bx=x+w*(0.12+k*0.24);
+    pileRow.appendChild(el('circle',{cx:bx,cy:110,r:6,fill:'#e8b96a',opacity:.55}));
+  }
+  pileRow.appendChild(el('circle',{cx:x+w/2,cy:110,r:7,fill:'#ffcf4d',opacity:.5}));
+  // dimension bracket
+  dims.appendChild(el('line',{x1:x,y1:190,x2:x+w,y2:190,stroke:'#3d6d8c','stroke-width':1.2}));
+  dims.appendChild(el('line',{x1:x,y1:183,x2:x,y2:197,stroke:'#3d6d8c','stroke-width':1.2}));
+  dims.appendChild(el('line',{x1:x+w,y1:183,x2:x+w,y2:197,stroke:'#3d6d8c','stroke-width':1.2}));
+  const t=el('text',{x:x+w/2,y:207,'text-anchor':'middle',fill:'#a8c8d8','font-size':12.5,'font-weight':700});
+  t.textContent=s+' m'; dims.appendChild(t);
+  // signature block
+  const g=el('g');
+  g.appendChild(el('rect',{x:x+2,y:258,width:w-4,height:22,rx:5,
+    fill: i%2 ? 'rgba(255,146,77,.28)' : 'rgba(79,208,224,.28)'}));
+  const st=el('text',{x:x+w/2,y:273,'text-anchor':'middle',fill:'#dff0f8','font-size':11.5,'font-weight':700});
+  st.textContent=(i%2?'短跨':'长跨');
+  g.appendChild(st); sig.appendChild(g);
+  x+=w;
+});
+piles.push(x);
+piles.forEach(px=>{
+  pileRow.appendChild(el('circle',{cx:px,cy:110,r:15,fill:'#b9c3c9',stroke:'#7fe3f0','stroke-width':1.5}));
+  pileRow.appendChild(el('circle',{cx:px,cy:110,r:6,fill:'#0a1620'}));
+});
+
+/* ---------- 工作量计算 ---------- */
+const sSpan=document.getElementById('sSpan'), sNet=document.getElementById('sNet'), sMin=document.getElementById('sMin');
+function calc(){
+  const span=+sSpan.value, net=+sNet.value, mn=+sMin.value;
+  document.getElementById('vSpan').textContent=span;
+  document.getElementById('vNet').textContent=net;
+  document.getElementById('vMin').textContent=mn;
+  const total=span*mn, grp=span*net;
+  document.getElementById('oH').textContent=Math.floor(total/60);
+  document.getElementById('oM').textContent=String(total%60).padStart(2,'0');
+  document.getElementById('oGrp').textContent=grp;
+}
+[sSpan,sNet,sMin].forEach(s=>s.addEventListener('input',calc));
+calc();
+
+/* ---------- 机器人沿俯视图往返 ---------- */
+let dir=1, rx=190;
+const robot=document.getElementById('robot');
+setInterval(()=>{
+  rx+=dir*3.4;
+  if(rx>820){rx=820;dir=-1;}
+  if(rx<190){rx=190;dir=1;}
+  robot.setAttribute('transform',`translate(${rx},110)`);
+},40);
+</script>
+</body>
+</html>

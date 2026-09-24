@@ -1,0 +1,633 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>柔性拦污网状态感知 · 一页总览</title>
+<style>
+:root{
+  --bg:#0a1420; --bg2:#0d1a28; --s1:#10202e; --s2:#16293a; --s3:#1b3245;
+  --bd:#233f56; --bd2:#2f526e;
+  --tx:#e9f3f9; --mu:#93b4c8; --dm:#6c8a9e;
+  --cy:#45c8dc; --cy2:#2a9db3;
+  --am:#ffc84d; --or:#ff8f4d; --rd:#ff5f5f; --gr:#56d18a; --vi:#a98cff;
+  --r:14px;
+  --fs-xs:11.5px; --fs-sm:12.5px; --fs-md:13.5px; --fs-lg:15px; --fs-xl:16.5px;
+  --sh:0 1px 0 rgba(255,255,255,.04) inset, 0 8px 28px rgba(0,0,0,.28);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth;scroll-padding-top:64px}
+body{
+  background:var(--bg); color:var(--tx);
+  font-family:"PingFang SC","Hiragino Sans GB","Microsoft YaHei",system-ui,-apple-system,sans-serif;
+  line-height:1.75; -webkit-font-smoothing:antialiased;
+}
+.wrap{max-width:1120px;margin:0 auto;padding:0 22px}
+
+/* ── 顶栏 ── */
+nav{
+  position:sticky;top:0;z-index:50;
+  background:rgba(10,20,32,.86);backdrop-filter:blur(14px);
+  border-bottom:1px solid var(--bd);
+}
+nav .in{max-width:1120px;margin:0 auto;padding:0 22px;display:flex;align-items:center;gap:4px;height:54px;overflow-x:auto}
+nav a{
+  color:var(--mu);text-decoration:none;font-size:var(--fs-md);font-weight:600;
+  padding:7px 12px;border-radius:8px;white-space:nowrap;transition:.15s;
+}
+nav a:hover{color:var(--tx);background:var(--s2)}
+nav .brand{color:var(--cy);font-weight:800;letter-spacing:.02em;margin-right:10px;font-size:var(--fs-md)}
+
+/* ── Hero ── */
+header{padding:56px 0 40px;background:radial-gradient(1200px 400px at 20% -10%,rgba(69,200,220,.10),transparent 70%)}
+.kick{color:var(--cy);font-size:var(--fs-xs);letter-spacing:.24em;font-weight:800;margin-bottom:16px}
+h1{font-size:clamp(26px,4vw,38px);line-height:1.28;letter-spacing:-.015em;font-weight:800}
+h1 em{color:var(--am);font-style:normal}
+.lede{color:var(--mu);font-size:var(--fs-lg);margin-top:16px;max-width:760px}
+.hero-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:12px;margin-top:30px}
+.hi{background:var(--s1);border:1px solid var(--bd);border-radius:12px;padding:15px 16px}
+.hi .k{color:var(--am);font-size:var(--fs-xs);font-weight:800;letter-spacing:.1em}
+.hi .v{font-size:var(--fs-lg);font-weight:700;margin-top:5px;line-height:1.45}
+.hi .d{font-size:var(--fs-sm);color:var(--dm);margin-top:5px;line-height:1.55}
+
+/* ── 章节 ── */
+section{padding:46px 0;border-top:1px solid var(--bd)}
+section:first-of-type{border-top:none}
+.sh{display:flex;align-items:baseline;gap:14px;margin-bottom:8px}
+.sh .n{
+  flex:0 0 auto;width:32px;height:32px;border-radius:9px;background:var(--s2);
+  border:1px solid var(--bd2);color:var(--cy);font-size:var(--fs-md);font-weight:800;
+  display:flex;align-items:center;justify-content:center;
+}
+.sh h2{font-size:clamp(19px,2.6vw,24px);font-weight:750;letter-spacing:-.01em}
+.ss{color:var(--dm);font-size:var(--fs-md);margin:0 0 22px 46px;max-width:820px}
+
+/* ── 卡片 / 图 ── */
+.fig{
+  background:var(--s1);border:1px solid var(--bd);border-radius:var(--r);
+  overflow:hidden;box-shadow:var(--sh);margin-bottom:14px;
+}
+.fig .cap{padding:14px 18px 0;display:flex;justify-content:space-between;align-items:baseline;gap:12px;flex-wrap:wrap}
+.fig .cap b{font-size:var(--fs-lg);color:var(--tx)}
+.fig .cap span{font-size:var(--fs-sm);color:var(--dm)}
+.fig .body{padding:12px 14px 16px}
+svg{display:block;width:100%;height:auto;border-radius:10px}
+.note{
+  background:var(--s2);border:1px solid var(--bd);border-radius:11px;
+  padding:14px 16px;font-size:var(--fs-md);color:var(--mu);line-height:1.75;
+}
+.note b{color:var(--tx)}
+.note .hl{color:var(--am);font-weight:700}
+
+/* ── 3D ── */
+#c3{height:min(58vw,520px);min-height:340px;background:linear-gradient(180deg,#0e2434,#081420);border-radius:10px}
+.tools{display:flex;gap:7px;flex-wrap:wrap;padding:12px 14px 0}
+button{
+  background:var(--s2);color:#d6eef8;border:1px solid var(--bd2);border-radius:9px;
+  padding:8px 13px;cursor:pointer;font-size:var(--fs-md);font-family:inherit;font-weight:600;transition:.15s;
+}
+button:hover{background:var(--s3);border-color:var(--cy2)}
+button.on{background:var(--cy);color:#06222b;border-color:var(--cy);font-weight:800}
+.lgd{display:flex;gap:18px;flex-wrap:wrap;font-size:var(--fs-sm);color:var(--mu);padding:12px 14px 0}
+.lgd i{display:inline-block;width:11px;height:11px;border-radius:3px;margin-right:7px;vertical-align:-1px}
+
+/* ── 更正卡 ── */
+.fx{background:var(--s1);border:1px solid var(--bd);border-radius:13px;padding:18px 20px;margin-bottom:12px}
+.fx .h{display:flex;align-items:baseline;gap:11px;flex-wrap:wrap;margin-bottom:13px}
+.fx .h .i{color:var(--am);font-weight:800;font-size:var(--fs-xs);letter-spacing:.06em}
+.fx .h .ti{font-size:var(--fs-lg);font-weight:750}
+.ba{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+@media(max-width:700px){.ba{grid-template-columns:1fr}}
+.ba>div{border-radius:10px;padding:13px 15px;font-size:var(--fs-md);line-height:1.7}
+.ba .o{background:rgba(255,95,95,.08);border:1px dashed rgba(255,95,95,.36)}
+.ba .n{background:rgba(86,209,138,.08);border:1px solid rgba(86,209,138,.34)}
+.ba .tg{font-size:var(--fs-xs);font-weight:800;letter-spacing:.1em;display:block;margin-bottom:6px}
+.ba .o .tg{color:var(--rd)} .ba .n .tg{color:var(--gr)}
+.mini{font-size:var(--fs-sm);color:var(--dm);margin-top:10px;line-height:1.7}
+
+/* ── 清单 ── */
+ol.q{list-style:none;counter-reset:q}
+ol.q li{
+  counter-increment:q;position:relative;padding:14px 16px 14px 52px;
+  background:var(--s1);border:1px solid var(--bd);border-radius:11px;margin-bottom:9px;
+}
+ol.q li::before{
+  content:counter(q);position:absolute;left:15px;top:14px;
+  width:25px;height:25px;border-radius:7px;background:var(--s3);
+  border:1px solid var(--bd2);color:var(--am);font-size:var(--fs-sm);font-weight:800;
+  display:flex;align-items:center;justify-content:center;
+}
+ol.q .qq{font-size:var(--fs-lg);font-weight:650}
+ol.q .qw{font-size:var(--fs-sm);color:var(--dm);margin-top:4px;line-height:1.65}
+ol.q li.hot{border-color:rgba(255,95,95,.42);background:rgba(255,95,95,.05)}
+ol.q li.hot::before{background:var(--rd);color:#2a0808;border-color:var(--rd)}
+
+.tag{display:inline-block;font-size:var(--fs-xs);font-weight:800;padding:2px 9px;border-radius:20px;letter-spacing:.03em;vertical-align:middle}
+.tag.ok{background:rgba(86,209,138,.15);color:var(--gr)}
+.tag.wn{background:rgba(255,200,77,.15);color:var(--am)}
+.tag.no{background:rgba(255,95,95,.15);color:var(--rd)}
+.tag.co{background:rgba(69,200,220,.15);color:var(--cy)}
+
+footer{border-top:1px solid var(--bd);padding:26px 0 60px;color:var(--dm);font-size:var(--fs-sm);line-height:1.85}
+footer b{color:var(--cy)}
+
+/* ── SVG 文字体系统（统一，禁止在 <text> 上再写 fill/font-size/font-weight） ── */
+svg text{font-family:inherit}
+.s-t{font-size:var(--fs-sm);font-weight:500}
+.s-t.sm{font-size:var(--fs-xs)}
+.s-t.md{font-size:var(--fs-md);font-weight:600}
+.s-t.lg{font-size:var(--fs-lg);font-weight:700}
+.s-t.b{font-weight:700}
+.s-t.xb{font-weight:800}
+.f-flow{fill:#ffc84d}.f-net{fill:#ffb98f}.f-bag{fill:#9fc78f}
+.f-cy{fill:#8fe8f5}.f-cydim{fill:#6fb8c8}.f-dn{fill:#8fd8e8}
+.f-dim{fill:#8aa3b0}.f-dim2{fill:#a8c8d8}
+.f-err{fill:#ff9a9a}.f-amb{fill:#ffe9a8}
+
+
+/* ── 排版微调 ── */
+h1,h2{text-wrap:balance}
+.hi{display:flex;flex-direction:column}
+.hi .d{margin-top:auto}
+.lede{text-wrap:pretty}
+.ba>div{text-wrap:pretty}
+@media(max-width:640px){
+  section{padding:34px 0}
+  .ss{margin-left:0}
+  .fig .cap{flex-direction:column;align-items:flex-start;gap:2px}
+}
+
+code{background:var(--s2);border:1px solid var(--bd);border-radius:5px;padding:1px 6px;font-size:.92em;color:#bfe6f2}
+</style>
+</head>
+<body>
+
+<nav><div class="in">
+  <span class="brand">柔性拦污网 · 状态感知</span>
+  <a href="#s1">① 走向</a><a href="#s2">② 立体</a><a href="#s3">③ 检查项</a>
+  <a href="#s4">④ 三个问题</a><a href="#s5">⑤ 更正</a><a href="#s6">⑥ 待确认</a>
+</div></nav>
+
+<header><div class="wrap">
+  <div class="kick">核电冷源取水 · 阳江南侧明渠 / 前池</div>
+  <h1>网是<em>一道垂直帘幕</em>，把水流截住；<br>网兜在网的<em>下游</em>，机器人走<em>中间那段</em></h1>
+  <div class="lede">
+    监测只做<b>平网</b>：侧向间隙、底部间隙、缺块/破洞、网绳变形，沿浮纲展开成一张 2.5D 网系地图。
+    不洗网、不钻网兜、不做渠道三维 SLAM。
+  </div>
+  <div class="hero-grid">
+    <div class="hi"><div class="k">检 测 对 象</div><div class="v">一道平网</div><div class="d">网兜不检查，机器人不进网兜</div></div>
+    <div class="hi"><div class="k">走 行 区 域</div><div class="v">网 ↔ 网兜之间</div><div class="d">两段刻意拉开，中间是机器人走廊</div></div>
+    <div class="hi"><div class="k">四 项 指 标</div><div class="v">缝 · 洞 · 变形</div><div class="d">侧隙 / 底缝 / 缺块破洞 / 网绳变形</div></div>
+    <div class="hi"><div class="k">地 图</div><div class="v">2.5D M(s,z)</div><div class="d">沿浮纲展开，跨号不随潮位变</div></div>
+  </div>
+</div></header>
+
+<div class="wrap">
+
+<!-- ════════ ① 平面 ════════ -->
+<section id="s1">
+  <div class="sh"><span class="n">1</span><h2>平面：先定方向</h2></div>
+  <p class="ss">从上往下看。黄色水流一组横向平行箭头，橙色的网一根竖线，两者正交——网把水截住。网和网兜之间特意拉开一段，青色带就是机器人的行走区域。</p>
+
+  <div class="fig">
+    <div class="cap"><b>俯视平面图</b><span>水流 → ｜ 第一道拦截网 ｜ 机器人走廊 ｜ 网兜</span></div>
+    <div class="body">
+      <svg viewBox="0 0 1000 350" id="planSvg">
+        <defs>
+          <marker id="p1" markerWidth="11" markerHeight="11" refX="8" refY="3.5" orient="auto"><path d="M0,0 L9,3.5 L0,7 z" fill="#ffc84d"/></marker>
+          <marker id="p2" markerWidth="11" markerHeight="11" refX="8" refY="3.5" orient="auto"><path d="M0,0 L9,3.5 L0,7 z" fill="#45c8dc"/></marker>
+        </defs>
+        <rect width="1000" height="350" fill="#0b1a26"/>
+        <g stroke="#ffc84d" stroke-width="4" fill="none" opacity=".9" marker-end="url(#p1)">
+          <path d="M28 66  h208"/><path d="M28 126 h208"/><path d="M28 186 h208"/>
+          <path d="M28 246 h208"/><path d="M28 306 h208"/>
+        </g>
+        <text class="s-t f-flow md xb" x="32" y="50">水 流 方 向 →（五股平行，朝右）</text>
+
+        <g id="pl"></g>
+        <line x1="286" y1="58" x2="286" y2="316" stroke="#ff8f4d" stroke-width="9" stroke-linecap="round"/>
+        <text class="s-t f-net lg xb" x="302" y="78">第一道拦截网 · 平网</text>
+        <text class="s-t f-net sm" x="302" y="97">垂直水流 · 把水截住</text>
+
+        <rect x="300" y="58" width="360" height="258" fill="rgba(69,200,220,.09)" stroke="#45c8dc" stroke-width="1.6" stroke-dasharray="7 5"/>
+        <text class="s-t f-cy md xb" x="480" y="82" text-anchor="middle">机器人行走区域</text>
+        <text class="s-t f-cydim sm" x="480" y="100" text-anchor="middle">网 ←——— 这段就是机器人行走区域 ———→ 网兜</text>
+        <g id="bot"></g>
+
+        <g id="bg"></g>
+        <text class="s-t f-bag md xb" x="668" y="292">网兜（横在下游）</text>
+        <text class="s-t f-bag sm" x="668" y="310">与网分开 · 不在检查范围</text>
+
+        <path d="M286 322 H660" stroke="#45c8dc" stroke-width="1.4" stroke-dasharray="4 3"/>
+        <path d="M286 316 v12 M660 316 v12" stroke="#45c8dc" stroke-width="1.4"/>
+        <text class="s-t f-cy sm xb" x="473" y="344" text-anchor="middle">网 ↔ 网兜 间距 = 机器人行走走廊</text>
+
+        <path d="M820 268 h152" stroke="#45c8dc" stroke-width="2.5" fill="none" opacity=".5" marker-end="url(#p2)"/>
+        <text class="s-t f-dn md xb" x="972" y="258" text-anchor="end">下游 → 泵房前池</text>
+
+        <path d="M286 172 h18 M286 164 v16 M304 164 v16" stroke="#ff5f5f" stroke-width="2.6"/>
+        <text class="s-t f-err xb" x="276" y="178" text-anchor="end">侧隙（网 ↔ 桩）</text>
+      </svg>
+    </div>
+  </div>
+
+  <div class="note">
+    <b>判断对错只看一件事：</b>网那根橙线必须和水流箭头<span class="hl">正交</span>。
+    如果网也画成横线、和水流平行，那就是早期版本犯的错——网顺着水，什么都拦不住。<br>
+    <b>走廊的意义：</b>机器人在网与网兜之间沿网方向（画面上竖直）来回走，靠近网面去量侧隙/底缝/破损，<b>不钻进网兜</b>。
+  </div>
+</section>
+
+<!-- ════════ ② 3D ════════ -->
+<section id="s2">
+  <div class="sh"><span class="n">2</span><h2>立体：桩排 · 垂直帘幕 · 下游网兜</h2></div>
+  <p class="ss">拖动旋转 · 滚轮缩放 · 右键平移。四个视角里「正对网面」最不容易看错：桩是圆的，网是一块竖面，网兜在更深处。</p>
+
+  <div class="fig">
+    <div class="cap"><b>交互三维模型</b><span>三道网已撤回 · 网兜与网隔开 · 网兜不检查</span></div>
+    <div class="tools">
+      <button id="bIso" class="on">轴测</button>
+      <button id="bFace">正对网面</button>
+      <button id="bTop">俯视</button>
+      <button id="bSide">侧视</button>
+      <button id="bFlow">水流 开/关</button>
+      <button id="bMark">测点 开/关</button>
+    </div>
+    <div class="body" style="padding-top:10px">
+      <div id="c3"></div>
+      <div class="lgd">
+        <span><i style="background:#b9c3c9"></i>桩（垂直水流成一行）</span>
+        <span><i style="background:#e08a4a"></i>平网（垂直帘幕 · 唯一检查对象）</span>
+        <span><i style="background:#7fa05a"></i>网兜（下游 · 不检查）</span>
+        <span><i style="background:#ffc84d"></i>水流（不穿网）</span>
+      </div>
+      <div class="note" style="margin-top:12px">
+        上游箭头撞到网面前就回上游重新冒头，<b>不穿过网面</b>；网兜区另有一组半透明弱箭头，表示过网后水流变弱。
+        网兜用环放样成一只往下游趴的口袋，<b>袋口与网之间留出一段间距</b>——那段就是上一节说的机器人走廊。
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ════════ ③ 检查项 ════════ -->
+<section id="s3">
+  <div class="sh"><span class="n">3</span><h2>迎水面：四项检查落点</h2></div>
+  <p class="ss">顺着水流往上游看。桩是圆截面，网是挂在两根桩之间的一块竖面，四项检查全部在这块竖面上。</p>
+
+  <div class="fig">
+    <div class="cap"><b>正对迎水面</b><span>侧隙 · 底缝 · 缺块/破洞 · 网绳变形</span></div>
+    <div class="body">
+      <svg viewBox="0 0 1000 400">
+        <defs><marker id="f1" markerWidth="11" markerHeight="11" refX="8" refY="3.5" orient="auto"><path d="M0,0 L9,3.5 L0,7 z" fill="#ffc84d"/></marker></defs>
+        <rect width="1000" height="400" fill="#0b1a26"/>
+        <g stroke="#ffc84d" stroke-width="3.4" fill="none" opacity=".8" marker-end="url(#f1)">
+          <path d="M118 62 V316"/><path d="M180 62 V316"/><path d="M242 62 V316"/>
+        </g>
+        <text class="s-t f-flow md xb" x="146" y="44">水从纸面外朝纸面内流 ↓</text>
+
+        <path d="M330 58 L690 58 L762 330 L258 330 Z" fill="rgba(255,143,77,.15)" stroke="#ff8f4d" stroke-width="2.4"/>
+        <g stroke="#d08a52" stroke-width=".7" opacity=".42">
+          <path d="M372 60 L318 330 M424 60 L394 330 M476 60 L476 330 M528 60 L558 330 M580 60 L634 330 M624 60 L702 330"/>
+          <path d="M308 116 H708 M298 174 H718 M290 232 H726 M282 290 H734"/>
+        </g>
+        <path d="M470 176 Q 522 196 574 176" stroke="#ffc84d" stroke-width="1.8" fill="none" stroke-dasharray="6 4"/>
+        <text class="s-t f-amb sm b" x="522" y="216" text-anchor="middle">被流推得向下游鼓</text>
+
+        <path d="M330 62 h18 M330 54 v16 M348 54 v16" stroke="#ff5f5f" stroke-width="2.6"/>
+        <circle cx="294" cy="62" r="12" fill="#10202e" stroke="#ff5f5f" stroke-width="1.8"/>
+        <text class="s-t f-err xb" x="294" y="66" text-anchor="middle">1</text>
+        <text class="s-t f-err md xb" x="276" y="40" text-anchor="end">侧向间隙</text>
+        <text class="s-t f-err sm" x="276" y="58" text-anchor="end">网边缘 ↔ 桩</text>
+
+        <path d="M420 330 V366 M410 330 h20 M410 366 h20" stroke="#ff5f5f" stroke-width="2.6"/>
+        <circle cx="420" cy="292" r="12" fill="#10202e" stroke="#ff5f5f" stroke-width="1.8"/>
+        <text class="s-t f-err xb" x="420" y="296" text-anchor="middle">2</text>
+        <text class="s-t f-err md xb" x="444" y="288">底部间隙</text>
+        <text class="s-t f-err sm" x="444" y="306">底纲 ↔ 渠底 / 底板</text>
+
+        <path d="M558 92 q 14 -16 28 0 q 14 16 28 0" stroke="#ff5f5f" stroke-width="2.6" fill="none"/>
+        <path d="M598 192 l 18 -15 l 15 17 l -18 15 z" stroke="#ff5f5f" stroke-width="2.6" fill="rgba(255,95,95,.22)"/>
+        <circle cx="538" cy="92" r="12" fill="#10202e" stroke="#ff5f5f" stroke-width="1.8"/>
+        <text class="s-t f-err xb" x="538" y="96" text-anchor="middle">3</text>
+        <text class="s-t f-err md xb" x="556" y="88">缺块 / 破洞</text>
+        <text class="s-t f-err sm" x="646" y="218">洞</text>
+
+        <path d="M330 330 L 516 240" stroke="#ffc84d" stroke-width="1.5" stroke-dasharray="5 4"/>
+        <circle cx="524" cy="254" r="12" fill="#10202e" stroke="#ffc84d" stroke-width="1.8"/>
+        <text class="s-t f-flow xb" x="524" y="258" text-anchor="middle">4</text>
+        <text class="s-t f-amb md xb" x="548" y="250">网绳变形</text>
+        <text class="s-t f-amb sm" x="548" y="268">鼓包偏斜 · 纲绳离位</text>
+
+        <text class="s-t f-dim" x="500" y="390" text-anchor="middle">网兜在纸面更深处（下游），机器人不钻进去</text>
+      </svg>
+    </div>
+  </div>
+</section>
+
+<!-- ════════ ④ 三个问题 ════════ -->
+<section id="s4">
+  <div class="sh"><span class="n">4</span><h2>三个问题</h2></div>
+  <p class="ss">「机器人对网的监测」拆开就是这三件事，对应 <code>docs/tasks/01·02·03</code>。</p>
+  <div class="hero-grid">
+    <div class="hi"><div class="k">任务 1 · mapping</div><div class="v">2.5D 网系地图</div><div class="d">沿浮纲展开成栅格：横轴道/跨，纵轴水深。每格记离网距 d、离底距 h、污损、<b>可观测性</b>。特殊地形写进格子：<b>道、跨、缝、洞、底隙</b>。潮位变、d/h 变，跨号不能变；看不见的格子标 <code>unknown</code>，不虚报洞。</div></div>
+    <div class="hi"><div class="k">任务 2 · vision</div><div class="v">低能见度识网</div><div class="d">浑水低照下仍要看清<b>网结、纲线、孔</b>。两步：水下图像恢复（UIE，去散射纠色）→ 结节/纲线/孔分割。<b>视觉不负责全局定位</b>，只回答"这一格我看到什么"；浊度过高直接输出"本格不可观测"。</div></div>
+    <div class="hi"><div class="k">任务 3 · self-state</div><div class="v">自身与网的关系</div><div class="d">必须知道自己在<b>哪一跨、多深、离网多远、是否与网平行</b>。状态 x = <b>(s, z, d, psi)</b>。<b>没有这一项，2.5D 地图对不齐</b>——这是贴网行走的前提。学术名：可变形表面上的相对位姿调节。</div></div>
+  </div>
+</section>
+
+<!-- ════════ ⑤ 更正 ════════ -->
+<section id="s5">
+  <div class="sh"><span class="n">5</span><h2>通读全部资料后的更正</h2></div>
+  <p class="ss">课题 PDF 内嵌图纸 + 13 个月现场照片，推翻了早期基于少量材料做的几个判断。</p>
+
+  <div class="fx">
+    <div class="h"><span class="i">撤回</span><span class="ti">「三道网」是错的 —— 现场是一道平网 + 一排网兜</span></div>
+    <div class="ba">
+      <div class="o"><span class="tg">早期说法</span>按资料包里一行二手转述（某设计论文的「3+n：W1/W2/W3」），说本现场有三道网、侧隙要测三次、工作量乘 3。</div>
+      <div class="n"><span class="tg">一手材料</span>课题<b>立面图：每跨就一张网</b>，高 9200，挂两桩之间；<b>俯视图：一排网兜</b>；现场照片里就是一排兜。<span style="color:var(--am);font-weight:700">侧隙只在平网上测。</span></div>
+    </div>
+    <div class="mini">连带更正：每跨测 1 道平网 + 1 个网兜，工作量按"一道"重算，比原先估的更少。</div>
+  </div>
+
+  <div class="fx">
+    <div class="h"><span class="i">撤回</span><span class="ti">网的朝向画反过 —— 网垂直截流，不是顺着水流</span></div>
+    <div class="ba">
+      <div class="o"><span class="tg">早期图</span>把网画成沿水流铺开的一片斜膜，桩排在水的两侧 —— 那是纵向看，等于网顺着水，拦不住任何东西。</div>
+      <div class="n"><span class="tg">现在</span>桩排<b>垂直</b>水流成一行，网挂在相邻桩之间形成<b>垂直帘幕</b>截流，网兜在<b>下游</b>并<b>与网隔开一段</b>。</div>
+    </div>
+  </div>
+
+  <div class="fx">
+    <div class="h"><span class="i">范围收窄</span><span class="ti">兜不测 —— 机器人不进网兜</span></div>
+    <div class="ba">
+      <div class="o"><span class="tg">早期想测</span>兜形倾角、兜内堵塞、兜尾状态。</div>
+      <div class="n"><span class="tg">现在</span>网兜结构本身会挡住里面的东西，且形状软、会鼓，机器人进去既看不见也出不来。<span style="color:var(--am);font-weight:700">监测只做平网。</span>清洗才是洗兜（方向2，不在本范围）。</div>
+    </div>
+    <div class="mini">网与网兜之间那段空间，就是机器人的走行区域（见第 1 节平面图）。</div>
+  </div>
+
+  <div class="fx">
+    <div class="h"><span class="i">更正</span><span class="ti">浊度不是常数 —— 存在真实清水窗口</span></div>
+    <div class="ba">
+      <div class="o"><span class="tg">早期默认</span>"全浑浊、视觉不可见"，方案被动分级应对。</div>
+      <div class="n"><span class="tg">照片证据</span>2026-04-26 那组水是<span style="color:var(--am);font-weight:700">绿的、清的、能看清水下网体</span>；2024-08 / 2025-12 是棕褐不透明。<b>策略改为：主支排程等清水窗口，声呐+接触兜底。</b></div>
+    </div>
+    <div class="mini">连带更正：<b>"全浑浊视觉不可见"是清洗自盲的结论，不是本方向的常态。</b>不洗网 → 不制造浑浊。</div>
+  </div>
+
+  <div class="fx">
+    <div class="h"><span class="i">更正</span><span class="ti">桩比三维模型大得多</span></div>
+    <div class="ba">
+      <div class="o"><span class="tg">早期模型</span>底径 1.4 m 圆柱桩。</div>
+      <div class="n"><span class="tg">照片</span>大直径混凝土圆柱 + 很厚的承台梁，目测 1.5–2 m。<b>这是好消息：桩越大，特征越可测</b> —— 用桩当标尺、当声呐目标、当接触基准，都比设想中容易。</div>
+    </div>
+  </div>
+
+  <div class="fx">
+    <div class="h"><span class="i">新增</span><span class="ti">跨距不等距：18 m / 16 m 交替；跨数可估</span></div>
+    <div class="ba">
+      <div class="o"><span class="tg">早期假设</span>等距 18 m，"数桩 × 固定节距"推位置。</div>
+      <div class="n"><span class="tg">俯视图尺寸链</span><b>18000 / 16000 / 18000 / 16000 …</b> 交替。等距假设从第 3 跨起累积半个节距误差；<b>改用节距的交替模式本身做跨号签名</b>，比数桩更鲁棒。另：照片数柱得每结构约 <b>8–10 跨</b>，全厂量级 10–30 跨。</div>
+    </div>
+  </div>
+</section>
+
+<!-- ════════ ⑥ 待确认 ════════ -->
+<section id="s6">
+  <div class="sh"><span class="n">6</span><h2>还卡在输入的</h2></div>
+  <p class="ss">前两条是当前最硬的阻塞；其余影响精度与验收口径。</p>
+  <ol class="q">
+    <li class="hot"><div class="qq">潮位变化到底有多大？</div><div class="qw">任务1 的验收标准是"潮位变了跨号不乱"。可潮位一变网就鼓、就离底，同一格的 d 和 h 全变。<b>潮差多少、网变形多少，决定 M(s,z) 是建一次就够，还是要按潮位分层建。</b></div></li>
+    <li class="hot"><div class="qq">网与网兜之间的距离到底多少？</div><div class="qw">这是机器人走廊的宽度，直接决定载具尺寸、转弯半径、沿网行走方式。图纸上没这个数，现场要量。</div></li>
+    <li><div class="qq">"实时"到哪一级？</div><div class="qw">机上即时出数 vs 上岸后出报告。决定要板上算力+标定链，还是普通观测级+后处理。<b>成本分水岭。</b></div></li>
+    <li><div class="qq">侧隙阈值多少算超限？</div><div class="qw">决定测量精度需求 —— ±20 mm 与 ±200 mm 是两代产品。</div></li>
+    <li><div class="qq">破损面积多大算要换网/补网？</div><div class="qw">决定检出下限与相机分辨率。</div></li>
+    <li><div class="qq">底缝基准面是泥面、抛石，还是结构底板？</div><div class="qw">泥面会随淤积变，底板不变。</div></li>
+    <li><div class="qq">18000 / 16000 是否真交替？竣工图能否提供？</div><div class="qw">跨号先验成立与否；也决定"桩当标尺"取哪个特征长度（圆的直径 vs 倒 T 的翼缘宽）。</div></li>
+    <li><div class="qq">网绳变形里，哪些算"正常"、哪些算"失效"？</div><div class="qw">柔性网天生会鼓会斜。<b>没有失效判据，"变形"这个指标就没法验收</b> —— 这是四项指标里唯一没有规范依据的。</div></li>
+    <li><div class="qq">课题提到的「视频1 网具水下视频」</div><div class="qw">本方向的基准态样例。看了它，浊度分级和检测难度才能定档。</div></li>
+    <li><div class="qq">旧网期的破损检出率预期？</div><div class="qw">2026-07 堆场照片证明网在以换代清。白网上一个洞极明显，褐网上洞被附着物糊住 —— 不能给一个全期一致的检出率承诺。</div></li>
+  </ol>
+</section>
+
+<footer>
+  <div><b>资料基础</b>　课题 PDF（含内嵌图纸）｜<code>Underwater-Robot-Design</code> 12 份资料｜背景调查报告｜拦截网照片.zip（15 图 + 1 视频，2024-07～2026-07）｜载具照片 2 张 + 视频 3 段｜竞品 N4 彩页</div>
+  <div style="margin-top:6px"><b>证据分级</b>　✅ 图纸/照片直接可见 ｜ ⚠️ 有依据未一手核实 ｜ ❓ 未证实。照片日期取自 zip 文件时间戳，EXIF 已被微信转存抹除，不能 100% 保证是拍摄当天。</div>
+  <div style="margin-top:6px"><b>仓库</b>　github.com/Dalaoyuan2020/underwater-net-perception — <code>docs/tasks/01-mapping</code> · <code>02-underwater-vision</code> · <code>03-self-state</code> · <code>docs/schema/net-grid.example.json</code></div>
+</footer>
+
+</div><!-- /wrap -->
+
+<!-- ════════ 平面图填充 ════════ -->
+<script>
+(function(){
+  const NS='http://www.w3.org/2000/svg';
+  const mk=(t,a)=>{const e=document.createElementNS(NS,t);for(const k in a)e.setAttribute(k,a[k]);return e;};
+  const pl=document.getElementById('pl'),bg=document.getElementById('bg'),bot=document.getElementById('bot');
+  const NETX=286,BAGX=660,ys=[64,142,204,266,308],pitch=['18 m','16 m','18 m','18 m'];
+
+  ys.forEach(y=>{
+    pl.appendChild(mk('circle',{cx:NETX,cy:y,r:10,fill:'#b9c3c9',stroke:'#7fe3f0','stroke-width':1.8}));
+    pl.appendChild(mk('circle',{cx:NETX,cy:y,r:3.6,fill:'#0b1a26'}));
+  });
+  pitch.forEach((p,i)=>{
+    const y0=ys[i],y1=ys[i+1];
+    pl.appendChild(mk('line',{x1:NETX-16,y1:y0,x2:NETX-16,y2:y1,stroke:'#3d6d8c','stroke-width':1.2}));
+    pl.appendChild(mk('line',{x1:NETX-22,y1:y0,x2:NETX-10,y2:y0,stroke:'#3d6d8c','stroke-width':1.2}));
+    pl.appendChild(mk('line',{x1:NETX-22,y1:y1,x2:NETX-10,y2:y1,stroke:'#3d6d8c','stroke-width':1.2}));
+    const t=mk('text',{x:NETX-26,y:(y0+y1)/2+4,'text-anchor':'end'});
+    t.setAttribute('class','s-t f-dim2 sm b');t.textContent=p;pl.appendChild(t);
+  });
+  for(let i=0;i<ys.length-1;i++){
+    const y0=ys[i],y1=ys[i+1],L=150,mid=(y0+y1)/2,bk=(y1-y0)*.30;
+    bg.appendChild(mk('polygon',{points:`${BAGX},${y0} ${BAGX},${y1} ${BAGX+L},${mid+bk/2} ${BAGX+L},${mid-bk/2}`,
+      fill:'rgba(127,160,90,.30)',stroke:'#9fc78f','stroke-width':1.4}));
+    bg.appendChild(mk('line',{x1:BAGX+L,y1:mid-bk/2,x2:BAGX+L,y2:mid+bk/2,stroke:'#9fc78f','stroke-width':3.4}));
+    bg.appendChild(mk('line',{x1:BAGX,y1:mid,x2:BAGX+L,y2:mid,stroke:'#9fc78f','stroke-width':.8,opacity:.45}));
+  }
+  const RX=480;
+  bot.appendChild(mk('rect',{x:RX-16,y:157,width:32,height:24,rx:5,fill:'#2a9db3',stroke:'#7fe3f0','stroke-width':1.8}));
+  bot.appendChild(mk('circle',{cx:RX,cy:169,r:6.5,fill:'#0b1a26'}));
+  bot.appendChild(mk('line',{x1:RX,y1:124,x2:RX,y2:157,stroke:'#7fe3f0','stroke-width':1.7}));
+  bot.appendChild(mk('path',{d:`M${RX-6} 131 L${RX} 122 L${RX+6} 131 Z`,fill:'#7fe3f0'}));
+  bot.appendChild(mk('line',{x1:RX,y1:214,x2:RX,y2:181,stroke:'#7fe3f0','stroke-width':1.7}));
+  bot.appendChild(mk('path',{d:`M${RX-6} 207 L${RX} 216 L${RX+6} 207 Z`,fill:'#7fe3f0'}));
+  bot.appendChild(mk('line',{x1:RX-16,y1:169,x2:NETX+20,y2:169,stroke:'#ff9a9a','stroke-width':1.6,'stroke-dasharray':'4 3'}));
+  bot.appendChild(mk('path',{d:`M${NETX+26} 163 L${NETX+18} 169 L${NETX+26} 175 Z`,fill:'#ff9a9a'}));
+  const t=mk('text',{x:RX+8,y:148});
+  t.setAttribute('class','s-t f-cy sm xb');t.textContent='机器人';bot.appendChild(t);
+})();
+</script>
+
+<!-- ════════ 3D ════════ -->
+<script type="importmap">
+{"imports":{"three":"https://unpkg.com/three@0.160.0/build/three.module.js","three/addons/":"https://unpkg.com/three@0.160.0/examples/jsm/"}}
+</script>
+<script type="module">
+import * as THREE from 'three';
+import {OrbitControls} from 'three/addons/controls/OrbitControls.js';
+
+const host=document.getElementById('c3');
+const renderer=new THREE.WebGLRenderer({antialias:true});
+renderer.setPixelRatio(Math.min(devicePixelRatio,2));
+function size(){const h=host.clientHeight||420;renderer.setSize(host.clientWidth,h);
+  camera.aspect=host.clientWidth/h;camera.updateProjectionMatrix();}
+const scene=new THREE.Scene();
+scene.background=new THREE.Color(0x0a1a26);
+scene.fog=new THREE.Fog(0x0a1a26,58,200);
+const camera=new THREE.PerspectiveCamera(46,1.8,0.1,600);
+camera.position.set(-32,25,44);
+const controls=new OrbitControls(camera,renderer.domElement);
+controls.target.set(7,4,0);controls.enableDamping=true;
+host.appendChild(renderer.domElement);
+
+scene.add(new THREE.AmbientLight(0x8fb4c8,.8));
+const sun=new THREE.DirectionalLight(0xfff2d8,1.25);sun.position.set(-32,52,20);scene.add(sun);
+const fill=new THREE.DirectionalLight(0x7fd0ff,.4);fill.position.set(32,10,-32);scene.add(fill);
+
+const NET_H=9.2, SPAN=[18,16,18,18], NP=SPAN.length+1, Z0=-26;
+
+const bed=new THREE.Mesh(new THREE.PlaneGeometry(160,115),new THREE.MeshLambertMaterial({color:0x3a3226}));
+bed.rotation.x=-Math.PI/2;scene.add(bed);
+const water=new THREE.Mesh(new THREE.PlaneGeometry(160,115),
+  new THREE.MeshPhongMaterial({color:0x1a6a86,transparent:true,opacity:.33,shininess:90}));
+water.rotation.x=-Math.PI/2;water.position.y=3.2;scene.add(water);
+
+const pileM=new THREE.MeshPhongMaterial({color:0xb9c3c9}),capM=new THREE.MeshPhongMaterial({color:0x9aa4ab});
+let z=Z0,zLast=z;
+for(let i=0;i<NP;i++){
+  const p=new THREE.Mesh(new THREE.CylinderGeometry(0.95,1.05,NET_H+0.4,20),pileM);
+  p.position.set(0,(NET_H+0.4)/2,z);scene.add(p);
+  const c=new THREE.Mesh(new THREE.BoxGeometry(2.6,0.7,2.6),capM);c.position.set(0,NET_H+0.4,z);scene.add(c);
+  zLast=z; z+=SPAN[Math.min(i,SPAN.length-1)];
+}
+const beam=new THREE.Mesh(new THREE.BoxGeometry(2.4,0.8,(zLast-Z0)+4),capM);
+beam.position.set(0,NET_H+0.8,(Z0+zLast)/2);scene.add(beam);
+
+/* 平网：每跨一块垂直帘幕，向下游鼓 */
+const netM=new THREE.MeshPhongMaterial({color:0xe08a4a,transparent:true,opacity:.72,side:THREE.DoubleSide});
+const wireM=new THREE.LineBasicMaterial({color:0xc9703a,transparent:true,opacity:.6});
+const spans=[];
+function curtain(z0,z1){
+  const A=1.5,SZ=14,SY=10,pos=[],idx=[],lns=[];
+  for(let j=0;j<=SY;j++)for(let i=0;i<=SZ;i++){
+    const tz=i/SZ,ty=j/SY;
+    pos.push(A*Math.sin(Math.PI*tz)*Math.sin(Math.PI*ty), 0.2+ty*(NET_H-0.2), z0+(z1-z0)*tz);
+  }
+  for(let j=0;j<SY;j++)for(let i=0;i<SZ;i++){
+    const a=j*(SZ+1)+i,b=a+1,c=a+SZ+1,d=c+1;idx.push(a,c,b,b,c,d);
+  }
+  const g=new THREE.BufferGeometry();
+  g.setAttribute('position',new THREE.Float32BufferAttribute(pos,3));
+  g.setIndex(idx);g.computeVertexNormals();
+  scene.add(new THREE.Mesh(g,netM));
+  for(let j=0;j<=SY;j+=2){const pts=[];
+    for(let i=0;i<=SZ;i++){const tz=i/SZ,ty=j/SY;
+      pts.push(new THREE.Vector3(A*Math.sin(Math.PI*tz)*Math.sin(Math.PI*ty),0.2+ty*(NET_H-0.2),z0+(z1-z0)*tz));}
+    lns.push(new THREE.BufferGeometry().setFromPoints(pts));}
+  lns.forEach(g2=>scene.add(new THREE.Line(g2,wireM)));
+}
+let zc=Z0;for(let i=0;i<SPAN.length;i++){spans.push([zc,zc+SPAN[i]]);curtain(zc,zc+SPAN[i]);zc+=SPAN[i];}
+
+/* 网兜：环放样成往下游趴的口袋，袋口与网隔开一段 */
+const bagM=new THREE.MeshPhongMaterial({color:0x7fa05a,transparent:true,opacity:.58,side:THREE.DoubleSide});
+const bagE=new THREE.LineBasicMaterial({color:0xc8e0a8});
+function bag(z0,z1){
+  const cz=(z0+z1)/2,hw=(z1-z0)/2;
+  const rings=[
+    {x:4.6, w:0.96, yt:9.0, yb:0.4},   // 袋口：与网隔开一段
+    {x:7.1, w:0.70, yt:7.2, yb:0.6},
+    {x:9.6, w:0.44, yt:5.0, yb:1.0},
+    {x:12.1,w:0.16, yt:2.8, yb:1.6},   // 扎口
+  ];
+  const SEG=20,P=[];
+  rings.forEach(r=>{const row=[];
+    for(let i=0;i<=SEG;i++){const a=i/SEG*Math.PI*2;
+      row.push(new THREE.Vector3(r.x,(r.yt+r.yb)/2+Math.sin(a)*(r.yt-r.yb)/2, cz+Math.cos(a)*hw*r.w));}
+    P.push(row);});
+  const pos=[],idx=[];
+  P.forEach(r=>r.forEach(v=>pos.push(v.x,v.y,v.z)));
+  for(let k=0;k<P.length-1;k++)for(let i=0;i<SEG;i++){
+    const a=k*(SEG+1)+i,b=a+1,c=a+SEG+1,d=c+1;idx.push(a,c,b,b,c,d);}
+  const g=new THREE.BufferGeometry();
+  g.setAttribute('position',new THREE.Float32BufferAttribute(pos,3));
+  g.setIndex(idx);g.computeVertexNormals();
+  scene.add(new THREE.Mesh(g,bagM));
+  P.forEach(row=>scene.add(new THREE.Line(new THREE.BufferGeometry().setFromPoints(row),bagE)));
+  for(let s=0;s<SEG;s+=4){const ln=[];P.forEach(r=>ln.push(r[s]));
+    scene.add(new THREE.Line(new THREE.BufferGeometry().setFromPoints(ln),bagE));}
+}
+spans.forEach(s=>bag(s[0],s[1]));
+
+/* 水流：上游止于网前（不穿网）；下游弱箭头只在网兜区 */
+const flowUp=new THREE.Group(),flowDn=new THREE.Group();
+scene.add(flowUp);scene.add(flowDn);
+const aM=new THREE.MeshBasicMaterial({color:0xffc84d});
+const aM2=new THREE.MeshBasicMaterial({color:0xffc84d,transparent:true,opacity:.38});
+const X_HIT=-1.2;
+for(let k=0;k<10;k++){
+  const a=new THREE.Mesh(new THREE.ConeGeometry(0.42,1.9,10),aM);a.rotation.z=-Math.PI/2;
+  a.position.set(-20+k*2.0,1.2+(k%4)*2.4,Z0+2+k*6.4);flowUp.add(a);
+}
+for(let k=0;k<6;k++){
+  const a=new THREE.Mesh(new THREE.ConeGeometry(0.32,1.5,10),aM2);a.rotation.z=-Math.PI/2;
+  a.position.set(1.8+k*0.45,1.4+(k%3)*2.4,Z0+10+k*9);flowDn.add(a);
+}
+function txt(t,x,y,z,col,w){
+  const cv=document.createElement('canvas');cv.width=w*10;cv.height=110;
+  const c=cv.getContext('2d');c.fillStyle='rgba(0,0,0,.45)';c.fillRect(0,0,w*10,110);
+  c.fillStyle=col;c.font='bold 52px sans-serif';c.fillText(t,18,72);
+  const sp=new THREE.Sprite(new THREE.SpriteMaterial({map:new THREE.CanvasTexture(cv),transparent:true}));
+  sp.scale.set(w,2.6,1);sp.position.set(x,y,z);scene.add(sp);
+}
+txt('水流方向 →',-17,NET_H+3,Z0-8,'#ffc84d',10);
+txt('平网 · 垂直截流',7,NET_H+2.4,(Z0+zLast)/2,'#ffb98f',11);
+txt('网兜 · 下游 · 隔一段 · 不检查',15,4.2,(Z0+zLast)/2,'#9fc78f',16);
+
+/* 测点 */
+const marks=new THREE.Group();scene.add(marks);
+function tag(t,x,y,z,col,w){const cv=document.createElement('canvas');cv.width=w*10;cv.height=100;
+  const c=cv.getContext('2d');c.fillStyle='rgba(0,0,0,.5)';c.fillRect(0,0,w*10,100);
+  c.fillStyle=col;c.font='bold 46px sans-serif';c.fillText(t,16,66);
+  const sp=new THREE.Sprite(new THREE.SpriteMaterial({map:new THREE.CanvasTexture(cv),transparent:true}));
+  sp.scale.set(w,1.85,1);sp.position.set(x,y,z);marks.add(sp);}
+const mk=(x,y,z,col)=>{const s=new THREE.Mesh(new THREE.SphereGeometry(0.5,14,10),new THREE.MeshBasicMaterial({color:col}));
+  s.position.set(x,y,z);marks.add(s);};
+mk(0.1,4.5,spans[0][0]+0.6,0xff5f5f);tag('① 侧隙',2.6,5.6,spans[0][0]+1.5,'#ff9a9a',7);
+mk(-0.3,0.9,spans[0][0]+SPAN[0]*0.5,0xff5f5f);tag('② 底缝',3.4,0.4,spans[0][0]+SPAN[0]*0.5,'#ff9a9a',7);
+mk(1.2,6.2,spans[1][0]+SPAN[1]*0.5,0xff5f5f);tag('③ 缺块/破洞',5.0,7.2,spans[1][0]+SPAN[1]*0.5,'#ff9a9a',10);
+mk(1.6,5.0,spans[2][0]+SPAN[2]*0.5,0xffc84d);tag('④ 网绳变形',6.0,3.9,spans[2][0]+SPAN[2]*0.5,'#ffe9a8',10);
+
+/* 视角 */
+const V={
+  iso :{p:[-32,25,44], t:[7,4,0]},
+  face:{p:[-36,5,26], t:[7,4.5,0]},
+  top :{p:[-15,64,28],t:[7,0,0]},
+  side:{p:[48,17,36], t:[5,4,0]},
+};
+function go(k){camera.position.set(...V[k].p);controls.target.set(...V[k].t);controls.update();}
+const B=['bIso','bFace','bTop','bSide'];
+function setOn(b){B.forEach(id=>document.getElementById(id).classList.remove('on'));b.classList.add('on');}
+document.getElementById('bIso').onclick =e=>{go('iso');setOn(e.target)};
+document.getElementById('bFace').onclick=e=>{go('face');setOn(e.target)};
+document.getElementById('bTop').onclick =e=>{go('top');setOn(e.target)};
+document.getElementById('bSide').onclick=e=>{go('side');setOn(e.target)};
+let fOn=true,mOn=true;
+document.getElementById('bFlow').onclick=()=>{fOn=!fOn;flowUp.visible=fOn;flowDn.visible=fOn;};
+document.getElementById('bMark').onclick=()=>{mOn=!mOn;marks.visible=mOn;};
+
+/* 动效 */
+let t=0;
+function tick(){
+  t+=0.016;
+  flowUp.children.forEach((a,i)=>{a.position.x+=0.17+(i%3)*0.03;if(a.position.x>X_HIT)a.position.x=-20-(i%3)*1.2;});
+  flowDn.children.forEach(a=>{a.position.x+=0.07;if(a.position.x>9.4)a.position.x=1.8;});
+  water.position.y=3.2+Math.sin(t*0.9)*0.04;
+  controls.update();renderer.render(scene,camera);requestAnimationFrame(tick);
+}
+size();tick();
+addEventListener('resize',size);
+</script>
+</body>
+</html>
