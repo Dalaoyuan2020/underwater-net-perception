@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>核电取水口拦污网三维结构</title>
+  <style>
+    :root { font-family: "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif; }
+    html, body { margin: 0; height: 100%; background: #0b1c28; color: #e8f1f6; overflow: hidden; }
+    #c { display: block; width: 100%; height: 100%; }
+    .hud {
+      position: absolute; left: 16px; top: 16px; max-width: 420px;
+      background: rgba(8, 22, 32, .78); border: 1px solid rgba(120, 190, 220, .25);
+      border-radius: 12px; padding: 14px 16px; backdrop-filter: blur(8px);
+      line-height: 1.45; font-size: 13px;
+    }
+    .hud h1 { margin: 0 0 8px; font-size: 16px; font-weight: 650; color: #9fe3ff; }
+    .hud b { color: #ffe08a; }
+    .legend span { display: inline-block; width: 10px; height: 10px; border-radius: 2px; margin-right: 6px; }
+    .btns { position: absolute; right: 16px; top: 16px; display: flex; flex-direction: column; gap: 8px; }
+    button {
+      background: #12384a; color: #dff6ff; border: 1px solid #3b7f9a; border-radius: 8px;
+      padding: 8px 12px; cursor: pointer;
+    }
+    button:hover { background: #1b4e66; }
+    .hint { position: absolute; bottom: 12px; left: 50%; transform: translateX(-50%); font-size: 12px; opacity: .75; }
+  </style>
+</head>
+<body>
+  <div style="position:fixed;left:0;right:0;top:0;z-index:999;background:#7a2b12;color:#ffe4d0;
+font:13px/1.6 -apple-system,'PingFang SC',sans-serif;padding:9px 16px;text-align:center">
+<b>参数已作废，仅作历史留存。</b>本模型三处与课题图纸／现场照片不符：
+桩径 1.1–1.4 m → 实为 1.5–2 m 大直径圆柱＋厚承台；
+网高 7.2 m → 实为 <b>9.2 m</b>（课题立面图标 9200）；
+跨距恒 18 m → 实为 <b>18 m / 16 m 交替</b>。
+另：本图网与网兜之间无间距，实际两者<b>隔开一段，中间是机器人行走区域</b>。
+正确版本见 viz/onepage.html，更正依据见 docs/evidence/corrections.md。
+</div>
+<canvas id="c" style="margin-top:52px"></canvas>
+  <div class="hud">
+    <h1>拦污网三维结构（按课题示意图）</h1>
+    <div>拖动旋转 · 滚轮缩放 · 右键平移</div>
+    <p>海水从 <b>上游（左侧黄箭头）</b> 流向电厂。黄球是浮子，青色柱是桩，灰网是平网，斜口袋是网兜。</p>
+    <p class="legend">
+      <span style="background:#f0c400"></span>浮子&nbsp;
+      <span style="background:#3aa0c8"></span>桩&nbsp;
+      <span style="background:#8aa3b0"></span>平网&nbsp;
+      <span style="background:#6b8f6a"></span>网兜&nbsp;
+      <span style="background:#c47a3a"></span>底纲
+    </p>
+    <p>监测重点：桩侧间隙、底部间隙、网衣破洞。清洗重点：平网迎水面 + 网兜内壁。</p>
+  </div>
+  <div class="btns">
+    <button id="viewIso">轴测</button>
+    <button id="viewFront">迎水面</button>
+    <button id="viewTop">俯视</button>
+    <button id="viewSide">侧视（看网兜）</button>
+    <button id="toggleFlow">水流开关</button>
+  </div>
+  <div class="hint">单位按课题：一跨约 18 m。本模型为示意几何，不是施工图。</div>
+
+  <script type="importmap">
+  {
+    "imports": {
+      "three": "https://unpkg.com/three@0.160.0/build/three.module.js",
+      "three/addons/": "https://unpkg.com/three@0.160.0/examples/jsm/"
+    }
+  }
+  </script>
+  <script type="module">
+    import * as THREE from "three";
+    import { OrbitControls } from "three/addons/controls/OrbitControls.js";
+
+    const canvas = document.getElementById("c");
+    const renderer = new THREE.WebGLRenderer({ canvas, antialias: true });
+    renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
+    renderer.setClearColor(0x0b1c28, 1);
+    renderer.shadowMap.enabled = true;
+
+    const scene = new THREE.Scene();
+    scene.fog = new THREE.Fog(0x0b1c28, 40, 160);
+
+    const camera = new THREE.PerspectiveCamera(50, 2, 0.1, 400);
+    camera.position.set(28, 18, 32);
+
+    const controls = new OrbitControls(camera, canvas);
+    controls.target.set(0, 2, 0);
+    controls.enableDamping = true;
+
+    scene.add(new THREE.AmbientLight(0x6f8ea0, 0.7));
+    const sun = new THREE.DirectionalLight(0xfff3d6, 1.15);
+    sun.position.set(-20, 30, 12);
+    scene.add(sun);
+    const fill = new THREE.DirectionalLight(0x6ec8ff, 0.35);
+    fill.position.set(15, 8, -20);
+    scene.add(fill);
+
+    const span = 18;
+    const nBay = 5;
+    const pileH = 10;
+    const netH = 7.2;
+    const waterY = 3.2;
+    const totalW = span * nBay;
+
+    const waterGeo = new THREE.PlaneGeometry(totalW + 40, 48, 40, 24);
+    const waterMat = new THREE.MeshPhongMaterial({
+      color: 0x1a6a86, transparent: true, opacity: 0.38, shininess: 80
+    });
+    const water = new THREE.Mesh(waterGeo, waterMat);
+    water.rotation.x = -Math.PI / 2;
+    water.position.y = waterY;
+    scene.add(water);
+
+    const bed = new THREE.Mesh(
+      new THREE.PlaneGeometry(totalW + 40, 48),
+      new THREE.MeshLambertMaterial({ color: 0x2a241c })
+    );
+    bed.rotation.x = -Math.PI / 2;
+    bed.position.y = -0.02;
+    scene.add(bed);
+
+    const pileMat = new THREE.MeshPhongMaterial({ color: 0x4aa3c2 });
+    const capMat = new THREE.MeshPhongMaterial({ color: 0xd8dde2 });
+    const floatMat = new THREE.MeshPhongMaterial({ color: 0xf0c400 });
+    const ropeMat = new THREE.MeshLambertMaterial({ color: 0xc47a3a });
+    const netMat = new THREE.MeshPhongMaterial({
+      color: 0x8aa3b0, transparent: true, opacity: 0.28, side: THREE.DoubleSide
+    });
+    const meshLineMat = new THREE.LineBasicMaterial({ color: 0xc9d7de, transparent: true, opacity: 0.55 });
+    const pocketMat = new THREE.MeshPhongMaterial({
+      color: 0x6b8f6a, transparent: true, opacity: 0.35, side: THREE.DoubleSide
+    });
+
+    function makePile(x) {
+      const g = new THREE.Group();
+      const col = new THREE.Mesh(new THREE.CylinderGeometry(0.55, 0.7, pileH, 16), pileMat);
+      col.position.y = pileH / 2;
+      const cap = new THREE.Mesh(new THREE.BoxGeometry(2.2, 0.45, 2.2), capMat);
+      cap.position.y = pileH + 0.1;
+      g.add(col, cap);
+      g.position.x = x;
+      return g;
+    }
+
+    function makeNetPanel(width, height) {
+      const group = new THREE.Group();
+      const sheet = new THREE.Mesh(new THREE.PlaneGeometry(width, height), netMat);
+      sheet.position.y = height / 2;
+      group.add(sheet);
+      const step = 0.7;
+      const pts = [];
+      for (let x = -width / 2; x <= width / 2 + 0.01; x += step) {
+        pts.push(new THREE.Vector3(x, 0, 0), new THREE.Vector3(x, height, 0));
+      }
+      for (let y = 0; y <= height + 0.01; y += step) {
+        pts.push(new THREE.Vector3(-width / 2, y, 0), new THREE.Vector3(width / 2, y, 0));
+      }
+      const geo = new THREE.BufferGeometry().setFromPoints(pts);
+      group.add(new THREE.LineSegments(geo, meshLineMat));
+      return group;
+    }
+
+    function makePocket(width) {
+      const g = new THREE.Group();
+      const shape = new THREE.Shape();
+      const w = width * 0.92;
+      shape.moveTo(-w / 2, 0);
+      shape.lineTo(w / 2, 0);
+      shape.lineTo(w / 2 * 0.35, -6.5);
+      shape.lineTo(-w / 2 * 0.35, -6.5);
+      shape.closePath();
+      const geo = new THREE.ShapeGeometry(shape);
+      const mesh = new THREE.Mesh(geo, pocketMat);
+      mesh.rotation.x = THREE.MathUtils.degToRad(18);
+      g.add(mesh);
+      const edge = new THREE.LineLoop(
+        new THREE.BufferGeometry().setFromPoints([
+          new THREE.Vector3(-w / 2, 0, 0),
+          new THREE.Vector3(w / 2, 0, 0),
+          new THREE.Vector3(w / 2 * 0.35, -6.5, 2.1),
+          new THREE.Vector3(-w / 2 * 0.35, -6.5, 2.1)
+        ]),
+        new THREE.LineBasicMaterial({ color: 0x9fbf96 })
+      );
+      g.add(edge);
+      return g;
+    }
+
+    const structure = new THREE.Group();
+    scene.add(structure);
+
+    for (let i = 0; i <= nBay; i++) {
+      structure.add(makePile(-totalW / 2 + i * span));
+    }
+
+    const topRope = new THREE.Mesh(new THREE.CylinderGeometry(0.06, 0.06, totalW, 8), ropeMat);
+    topRope.rotation.z = Math.PI / 2;
+    topRope.position.y = waterY + 0.35;
+    structure.add(topRope);
+
+    const botRope = topRope.clone();
+    botRope.position.y = 0.25;
+    structure.add(botRope);
+
+    for (let i = 0; i < nBay; i++) {
+      const x = -totalW / 2 + span / 2 + i * span;
+      const panel = makeNetPanel(span - 1.4, netH);
+      panel.position.set(x, 0.2, 0);
+      structure.add(panel);
+
+      const pocket = makePocket(span - 1.6);
+      pocket.position.set(x, 1.6, 0.15);
+      structure.add(pocket);
+
+      const nFloat = 8;
+      for (let k = 0; k < nFloat; k++) {
+        const f = new THREE.Mesh(new THREE.SphereGeometry(0.28, 16, 12), floatMat);
+        const fx = x - (span - 1.6) / 2 + k * ((span - 1.6) / (nFloat - 1));
+        f.position.set(fx, waterY + 0.28, 0);
+        structure.add(f);
+      }
+    }
+
+    const deck = new THREE.Mesh(
+      new THREE.BoxGeometry(totalW + 6, 0.5, 4.5),
+      new THREE.MeshPhongMaterial({ color: 0x8b9298 })
+    );
+    deck.position.set(0, pileH + 0.55, -1.6);
+    structure.add(deck);
+
+    const flowGroup = new THREE.Group();
+    scene.add(flowGroup);
+    const arrowMat = new THREE.MeshBasicMaterial({ color: 0xffdd55 });
+    for (let i = 0; i < 6; i++) {
+      const dir = new THREE.ArrowHelper(
+        new THREE.Vector3(0, 0, 1),
+        new THREE.Vector3(-20 + i * 8, 4.2, -16),
+        6, 0xffdd55, 1.2, 0.7
+      );
+      flowGroup.add(dir);
+    }
+
+    function label(text, pos) {
+      const cv = document.createElement("canvas");
+      cv.width = 512; cv.height = 128;
+      const ctx = cv.getContext("2d");
+      ctx.fillStyle = "rgba(0,0,0,0.35)";
+      ctx.fillRect(0, 0, 512, 128);
+      ctx.fillStyle = "#e9fbff";
+      ctx.font = "48px sans-serif";
+      ctx.fillText(text, 24, 80);
+      const tex = new THREE.CanvasTexture(cv);
+      const m = new THREE.SpriteMaterial({ map: tex, transparent: true });
+      const s = new THREE.Sprite(m);
+      s.scale.set(8, 2, 1);
+      s.position.copy(pos);
+      scene.add(s);
+    }
+    label("水流 → 电厂", new THREE.Vector3(-22, 8.5, -12));
+    label("平网", new THREE.Vector3(-8, 9.2, 1.5));
+    label("网兜", new THREE.Vector3(6, 1.2, 6.5));
+    label("桩", new THREE.Vector3(-totalW / 2, pileH + 2.2, 2.2));
+
+    const gapMarker = new THREE.Mesh(
+      new THREE.BoxGeometry(0.12, 3.2, 0.12),
+      new THREE.MeshBasicMaterial({ color: 0xff4d4d })
+    );
+    gapMarker.position.set(-totalW / 2 + 0.85, 2.2, 0.4);
+    scene.add(gapMarker);
+    label("侧向间隙", new THREE.Vector3(-totalW / 2 + 3.5, 5.2, 3.2));
+
+    function resize() {
+      const w = innerWidth, h = innerHeight;
+      renderer.setSize(w, h, false);
+      camera.aspect = w / h;
+      camera.updateProjectionMatrix();
+    }
+    addEventListener("resize", resize);
+    resize();
+
+    document.getElementById("viewIso").onclick = () => {
+      camera.position.set(28, 18, 32); controls.target.set(0, 2, 0);
+    };
+    document.getElementById("viewFront").onclick = () => {
+      camera.position.set(0, 6, 42); controls.target.set(0, 3, 0);
+    };
+    document.getElementById("viewTop").onclick = () => {
+      camera.position.set(0, 55, 0.1); controls.target.set(0, 0, 0);
+    };
+    document.getElementById("viewSide").onclick = () => {
+      camera.position.set(48, 8, 8); controls.target.set(0, 2, 2);
+    };
+    document.getElementById("toggleFlow").onclick = () => {
+      flowGroup.visible = !flowGroup.visible;
+    };
+
+    let t = 0;
+    function tick() {
+      t += 0.01;
+      water.position.y = waterY + Math.sin(t) * 0.03;
+      controls.update();
+      renderer.render(scene, camera);
+      requestAnimationFrame(tick);
+    }
+    tick();
+  </script>
+</body>
+</html>
