@@ -1,85 +1,36 @@
 # Underwater Net Perception
 
-柔性拦截网的水下状态感知：把网当成一张 **2.5D 网系地图**，机器人贴网走，标出道 / 跨 / 缝 / 洞 / 底隙，并保持自身相对网的安全工况。
+柔性拦截网的水下状态感知：水下扫地机器人。地板换成阳江核电取水前池的柔性拦污网。
 
-开源仓库。路径规划、清网执行不在本仓库主线；本仓库只做 **感知**。
+**写报告 / 本地 agent 先读：[`docs/CONTEXT.md`](docs/CONTEXT.md)** → [`docs/STATUS.md`](docs/STATUS.md)
 
 - Repo: https://github.com/Dalaoyuan2020/underwater-net-perception
 - License: MIT
 
 ## 一句话
 
-不做水下三维房间图。沿浮纲展开网面，格子记离网距、离底距和特征；机器人在这张网上定位和行走，像扫地机器人在地板栅格上走，只是地板换成了网。
+地点：广东阳江核电南侧泵房前池 / 明渠末段的冷源取水拦污网。
+不做渠道三维房间图。沿浮纲展开 2.5D 网系地图，贴网走，标道 / 跨 / 缝 / 洞 / 底隙。
 
-## 三个任务（先做这些）
+三个问题：水中自身状态（我是谁）、水中定位（我在哪）、水中识别（网上什么状态）。
+
+## 三个任务
 
 | # | 任务 | 交付 |
 |---|------|------|
-| 1 | **网具 2.5D 建图** | 网系栅格 M(s,z)：道、跨、缝、洞、底隙、离网 d、离底 h |
-| 2 | **低能见度视觉** | 水下恢复 + 网分割，让浑水图能看清结节和孔 |
-| 3 | **自身–网关系** | 位姿 (s,z,d,psi)：在哪一跨、多深、离网多远、是否贴平、是否在作业窗 |
+| 1 | 网具 2.5D 建图 | 栅格 M(s,z) + 道跨缝洞底隙 |
+| 2 | 低能见度视觉 | UIE + 结节/孔分割 |
+| 3 | 自身–网关系 | 位姿 (s,z,d,psi) 贴网作业窗 |
 
-特征识别默认写进地图格子，不单开第四个课题。
+## 有序加载
 
-## 坐标
-
-- s：沿浮纲（第几跨）
-- z：深度
-- d：法向离网距
-- psi：相对网面偏航（是否与网平行）
-
-## 方案图（给本地 / GPT 画正式图用）
-
-```mermaid
-flowchart LR
-  subgraph sensors [传感器]
-    SONAR[前视声呐/测距]
-    CAM[相机+灯]
-    IMU[IMU+深度计]
-    DOWN[下视测距]
-  end
-  subgraph t2 [任务2 低能见度视觉]
-    UIE[水下图像恢复 UIEB/EUVP]
-    SEG[结节/纲线/孔分割]
-  end
-  subgraph t3 [任务3 自身状态]
-    POSE[位姿 s,z,d,psi]
-    STOFF[贴网距离与姿态闭环]
-  end
-  subgraph t1 [任务1 网系2.5D地图]
-    GRID[栅格 M(s,z)]
-    LABELS[道 跨 缝 洞 底隙]
-  end
-  SONAR --> POSE
-  DOWN --> GRID
-  IMU --> POSE
-  CAM --> UIE --> SEG --> LABELS
-  SONAR --> LABELS
-  POSE --> STOFF
-  POSE --> GRID
-  LABELS --> GRID
-  GRID --> WALK[贴网行走 / 覆盖]
-```
-
-把这段 mermaid 丢给画图模型即可出架构图。
-
-## 仓库结构
-
-```
-docs/tasks/     三个任务说明
-docs/papers.md  可引用文献
-docs/notes/     现场与装备备忘
-viz/            三维示意（浏览器打开）
-AGENTS.md       给本地 agent 的入口
-```
+1. docs/CONTEXT.md — 地点、环境、装备、问题、进度
+2. docs/STATUS.md — 当前做到哪
+3. docs/tasks/ — 三个任务
+4. docs/papers.md — 文献
+5. docs/schema/net-grid.example.json
+6. viz/ — 三维示意说明（HTML 在本地材料包）
 
 ## 明确不做
 
-- 全渠道三维 SLAM
-- 单靠视觉走完全渠
-- 空化清网头设计（另线）
-- 覆盖规划以外的「智能化」大包
-
-## 本地 agent
-
-先读 `AGENTS.md` 和 `docs/tasks/`。
+全空间 SLAM、空化盘设计、把清网当成主线。
