@@ -1,0 +1,12 @@
+{
+  "frame": "net",
+  "spans": 4,
+  "cell_ds_m": 1.0,
+  "cell_dz_m": 1.0,
+  "robot": {"s": 16.0, "z": 2.2, "d": 0.32, "psi_deg": 3.0},
+  "cells": [
+    {"s_id": 1, "z_id": 2, "label": "hole", "h": 0.4, "fouling": 0.2, "observable": true},
+    {"s_id": 2, "z_id": 1, "label": "seam", "h": 0.3, "fouling": 0.1, "observable": true},
+    {"s_id": 3, "z_id": 3, "label": "bottom_gap", "h": 1.2, "fouling": 0.0, "observable": true}
+  ]
+}
