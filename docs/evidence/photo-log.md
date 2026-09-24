@@ -33,3 +33,27 @@
 ## 已推送的图像
 
 `images/site/` 下 6 张缩略图（长边 1400 px），用于文档说明；原始 58 MB 压缩包与 3 段视频**未推送**。
+
+## 图片索引
+
+16 张缩图在 `images/site/`，命名 = zip mtime + 内容。原始 58 MB 压缩包与 3 段载具片段未入库。
+
+| 文件 | 日期 | 内容 |
+|---|---|---|
+| `2024-07-09_floating-platform.jpg` | 2024-07-09 | 黄色模块化浮排平台（走道/设备/上岸坡道） |
+| `2024-08-30_turbid_fouled-bags.jpg` | 2024-08-30 | 全浊，网兜深褐、附着严重 |
+| `2024-08-30_pier-columns-b.jpg` | 2024-08-30 | 同批另一角度，墩柱与外露钢筋 |
+| `2025-06-10_unreviewed.jpg` | 2025-06-10 | **未看图**，仅入档 |
+| `2025-07-01_unreviewed.jpg` | 2025-07-01 | **未看图**，仅入档 |
+| `2025-12-09_panorama_spans-and-crane.jpg` | 2025-12-09 | 全景：一排兜 + 收放网门吊（数跨依据） |
+| `2025-12-09_panorama-alt.jpg` | 2025-12-09 | 同结构另一角度 |
+| `2025-12-17_fouled-panel.jpg` / `-alt.jpg` | 2025-12-17 | 附着重的大型网幅 |
+| `2026-01-06_new-nets-tan.jpg` | 2026-01-06 | 灰白新网一排 |
+| `2026-04-26_clear-water_white-net.jpg` | 2026-04-26 | **绿、清，能看见水下网体**（清水窗口证据） |
+| `2026-04-26_bag-collecting.jpg` | 2026-04-26 | 白色新网兜贴墩柱、钟形下收 |
+| `2026-04-26_submerged-bag.jpg` | 2026-04-26 | 刚好没入水面的满兜 |
+| `2026-07-06_workers-on-net.jpg` | 2026-07-06 | 载人吊笼在网旁作业（现状基线） |
+| `2026-07-16_floating-platform.jpg` | 2026-07-16 | 同一浮排另一角度 |
+| `2026-07-16_replaced-nets-stack.jpg` | 2026-07-16 | 堆场大量换下的旧网 |
+
+载具实物：`images/vehicle/carrier-view1.jpg`、`carrier-view2.jpg`、`deployment-crane-30s.mp4`、`underwater-8s.mp4`
